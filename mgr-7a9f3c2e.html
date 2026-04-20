@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Management · YouYi</title>
+<meta name="robots" content="noindex,nofollow,noarchive,nosnippet,noimageindex">
+<meta name="googlebot" content="noindex,nofollow">
+<meta name="bingbot" content="noindex,nofollow">
+<meta name="referrer" content="no-referrer">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='14' fill='%2300f5c4'/><circle cx='16' cy='16' r='5' fill='%23070b13'/></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700;800&family=Outfit:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#070b13;--bg2:#0b1019;--bg3:#101724;--bg4:#192030;--tx:#e6eaf3;--tx2:#8893a7;--tx3:#55627a;--bd:#182236;--bd2:#243348;--grn:#00f5c4;--grn2:#00d4a6;--grnA:rgba(0,245,196,.11);--blu:#4a94ff;--bluA:rgba(74,148,255,.11);--red:#ff5060;--redA:rgba(255,80,96,.11);--yel:#fbbf24;--yelA:rgba(251,191,36,.11);--r:10px;--r2:14px}
+body{font-family:'Noto Sans SC','Outfit',sans-serif;background:var(--bg);color:var(--tx);line-height:1.7;min-height:100vh;padding:30px 20px 80px}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(0,245,196,.04),transparent 60%);pointer-events:none;z-index:0}
+a{color:inherit;text-decoration:none}
+.w{max-width:1000px;margin:0 auto;position:relative;z-index:1}
+
+/* LOGIN */
+.lb{max-width:380px;margin:80px auto 0;text-align:center}
+.lb-ic{margin-bottom:20px}
+.lb h1{font-size:24px;font-weight:800;margin-bottom:8px}
+.lb p{font-size:13px;color:var(--tx2);margin-bottom:24px}
+.lb-in{width:100%;background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);padding:12px 16px;color:var(--tx);font-family:inherit;font-size:14px;margin-bottom:14px;transition:.2s}
+.lb-in:focus{outline:none;border-color:var(--grn);background:var(--bg3)}
+.lb-bt{width:100%;background:linear-gradient(135deg,var(--grn),var(--grn2));color:var(--bg);border:none;border-radius:var(--r);padding:12px;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;transition:.2s}
+.lb-bt:hover{transform:translateY(-1px);box-shadow:0 4px 20px rgba(0,245,196,.25)}
+.lb-err{color:var(--red);font-size:12px;margin-top:10px;display:none}
+.lb-back{display:inline-block;margin-top:20px;font-size:12px;color:var(--tx3)}
+
+/* HEADER */
+.ah{display:flex;justify-content:space-between;align-items:center;margin-bottom:28px;flex-wrap:wrap;gap:12px;padding-bottom:20px;border-bottom:1px solid var(--bd)}
+.ah-l{display:flex;align-items:center;gap:12px}
+.ah-l svg{width:28px;height:28px}
+.ah-l h1{font-size:20px;font-weight:800}
+.ah-l span{font-size:11px;color:var(--tx3);background:var(--bg2);padding:3px 10px;border-radius:99px;border:1px solid var(--bd)}
+.ah-r{display:flex;gap:8px}
+
+/* PANELS */
+.pn{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r2);padding:24px;margin-bottom:20px;scroll-margin-top:20px}
+.pn-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;padding-bottom:14px;border-bottom:1px solid var(--bd);flex-wrap:wrap;gap:8px}
+.pn-h h2{font-size:17px;font-weight:700;display:flex;align-items:center;gap:8px}
+.pn-h h2 i{font-style:normal}
+.pn-hp{font-size:11px;color:var(--tx3);margin-bottom:14px;margin-top:-6px}
+
+/* QUICK NAV */
+.qn{position:sticky;top:0;background:rgba(7,11,19,.94);backdrop-filter:blur(16px);z-index:50;padding:14px 0;margin-bottom:20px;border-bottom:1px solid var(--bd);display:flex;gap:6px;overflow-x:auto;flex-wrap:wrap}
+.qn a{padding:6px 14px;background:var(--bg2);border:1px solid var(--bd);border-radius:99px;font-size:11.5px;color:var(--tx2);font-weight:500;cursor:pointer;white-space:nowrap;transition:.2s}
+.qn a:hover{border-color:var(--grn);color:var(--grn)}
+
+/* ROWS */
+.r{margin-bottom:14px}
+.r label{display:block;font-size:11px;font-weight:600;color:var(--tx2);margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px}
+.r input,.r textarea,.r select{width:100%;background:var(--bg);border:1px solid var(--bd);border-radius:8px;padding:9px 12px;color:var(--tx);font-family:inherit;font-size:13px;transition:.2s}
+.r input:focus,.r textarea:focus,.r select:focus{outline:none;border-color:var(--grn)}
+.r textarea{min-height:100px;resize:vertical;line-height:1.7;font-family:'JetBrains Mono',monospace;font-size:12.5px}
+.r .hp{font-size:10.5px;color:var(--tx3);margin-top:3px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+/* BUTTONS */
+.b{padding:8px 16px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;border:none;font-family:inherit;transition:.2s;display:inline-flex;align-items:center;gap:5px}
+.b-g{background:var(--grn);color:var(--bg)}
+.b-o{background:var(--bg3);color:var(--tx);border:1px solid var(--bd)}
+.b-r{background:var(--redA);color:var(--red);border:1px solid rgba(255,80,96,.15)}
+.b-b{background:var(--bluA);color:var(--blu);border:1px solid rgba(74,148,255,.15)}
+.b-y{background:var(--yelA);color:var(--yel);border:1px solid rgba(251,191,36,.15)}
+.b:hover{transform:translateY(-1px);opacity:.9}
+.b:disabled{opacity:.5;cursor:wait}
+.ba{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap}
+
+/* COIN LIST */
+.ci{display:flex;align-items:center;gap:8px;padding:9px 12px;background:var(--bg);border:1px solid var(--bd);border-radius:7px;margin-bottom:6px;flex-wrap:wrap}
+.ci input{flex:1;min-width:60px;font-family:'JetBrains Mono',monospace;font-size:11.5px}
+.ci .rm{background:none;border:none;color:var(--red);cursor:pointer;font-size:14px;padding:2px 5px}
+
+/* ARTICLE LIST */
+.al{padding:12px;background:var(--bg);border:1px solid var(--bd);border-radius:8px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.al h4{font-size:13px;font-weight:600;margin-bottom:3px}
+.al .am{font-size:10.5px;color:var(--tx3)}
+.al .lb-indi{display:inline-flex;gap:3px;margin-left:6px}
+.al .lb-indi span{font-size:9px;padding:1px 6px;border-radius:99px;font-weight:600;background:var(--bg3);color:var(--tx2)}
+.al .lb-indi span.on{background:var(--grnA);color:var(--grn)}
+
+/* ARTICLE EDITOR */
+.edg{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:14px}
+.edg-full{grid-column:1/-1}
+.lbl-tag{display:inline-block;padding:3px 10px;border-radius:99px;font-size:11px;font-weight:700;background:var(--bluA);color:var(--blu);margin-bottom:6px}
+.lbl-tag.zh{background:var(--grnA);color:var(--grn)}
+.lang-block{background:var(--bg);border:1px solid var(--bd);border-radius:10px;padding:16px;margin-top:12px}
+.lang-block-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px}
+
+/* AUTO-TRANSLATE */
+.tg-box{background:linear-gradient(135deg,rgba(0,245,196,.04),rgba(74,148,255,.03));border:1px solid rgba(0,245,196,.15);border-radius:10px;padding:14px 16px;margin-bottom:16px}
+.tg-row{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
+.tg-lbl{font-size:12.5px;font-weight:600;display:flex;align-items:center;gap:6px}
+.tg-sw{position:relative;display:inline-block;width:40px;height:22px}
+.tg-sw input{opacity:0;width:0;height:0}
+.tg-sl{position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background:var(--bg3);border:1px solid var(--bd);transition:.3s;border-radius:22px}
+.tg-sl::before{content:"";position:absolute;height:14px;width:14px;left:3px;bottom:3px;background:var(--tx2);transition:.3s;border-radius:50%}
+input:checked+.tg-sl{background:var(--grnA);border-color:var(--grn)}
+input:checked+.tg-sl::before{transform:translateX(18px);background:var(--grn)}
+.tg-hint{font-size:10.5px;color:var(--tx3);margin-top:6px}
+
+/* TOAST */
+.ts{position:fixed;top:20px;right:20px;background:var(--grn);color:var(--bg);padding:10px 20px;border-radius:var(--r);font-size:12.5px;font-weight:600;z-index:9999;transform:translateX(120%);transition:.3s}
+.ts.sh{transform:translateX(0)}
+.ts.err{background:var(--red);color:#fff}
+
+/* CHECKBOX LABEL */
+.cb{display:inline-flex;align-items:center;gap:6px;cursor:pointer;font-size:12px}
+.cb input{width:auto;margin:0}
+
+/* PROGRESS */
+.prog{display:none;background:var(--bg3);padding:10px 14px;border-radius:8px;margin:12px 0;font-size:12px;color:var(--yel);border-left:3px solid var(--yel)}
+.prog.sh{display:block}
+
+@media(max-width:720px){.edg{grid-template-columns:1fr}.row2{grid-template-columns:1fr}.ah{flex-direction:column;align-items:flex-start}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div class="ts" id="ts"></div>
+
+<script>
+// ══════════════════════════════════════════════════════════════
+// DEFAULT DATA (must match index.html)
+// ══════════════════════════════════════════════════════════════
+const DF={
+coins:[{inst:'BTC-USDT',sym:'BTC',tv:'OKX:BTCUSDT',color:'#f7931a',on:1},{inst:'ETH-USDT',sym:'ETH',tv:'OKX:ETHUSDT',color:'#627eea',on:1},{inst:'SOL-USDT',sym:'SOL',tv:'OKX:SOLUSDT',color:'#9945ff',on:1},{inst:'DOGE-USDT',sym:'DOGE',tv:'OKX:DOGEUSDT',color:'#c2a633',on:1},{inst:'XRP-USDT',sym:'XRP',tv:'OKX:XRPUSDT',color:'#00aae4',on:1},{inst:'ADA-USDT',sym:'ADA',tv:'OKX:ADAUSDT',color:'#0033ad',on:1}],
+exs:[{id:'okx',url:'https://www.okx.com/',ft:1},{id:'binance',url:'https://www.binance.com/',ft:0},{id:'bybit',url:'https://www.bybit.com/',ft:0}],
+arts:[]
+};
+
+function ld(){try{const d=localStorage.getItem('csp3');const base=JSON.parse(JSON.stringify(DF));if(!d)return{...base,pw:'admin888',autoTL:1};const p=JSON.parse(d);return{...base,...p,pw:p.pw||'admin888',autoTL:p.autoTL??1}}catch(e){return{...JSON.parse(JSON.stringify(DF)),pw:'admin888',autoTL:1}}}
+function sv(d){const {pw,autoTL,...rest}=d;const full={...rest,pw,autoTL};localStorage.setItem('csp3',JSON.stringify(full))}
+let D=ld(),AL=sessionStorage.getItem('csp_auth')==='1',EA=null;
+
+function $(s){return document.querySelector(s)}
+function $$(s){return[...document.querySelectorAll(s)]}
+function es(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function tst(m,err){const t=document.getElementById('ts');t.textContent=m;t.className='ts sh'+(err?' err':'');setTimeout(()=>t.classList.remove('sh'),2500)}
+
+// ══════════════════════════════════════════════════════════════
+// GOOGLE TRANSLATE API (free, unofficial)
+// ══════════════════════════════════════════════════════════════
+// Maps our language codes → Google Translate codes
+const GT_MAP={zh:'zh-CN','zh-TW':'zh-TW',en:'en',ko:'ko'};
+
+async function translateOne(text,srcLang,tgtLang){
+  if(!text||!text.trim())return'';
+  if(srcLang===tgtLang)return text;
+  const sl=GT_MAP[srcLang]||srcLang,tl=GT_MAP[tgtLang]||tgtLang;
+  try{
+    const url='https://translate.googleapis.com/translate_a/single?client=gtx&sl='+sl+'&tl='+tl+'&dt=t&q='+encodeURIComponent(text);
+    const r=await fetch(url);
+    if(!r.ok)throw new Error('GT '+r.status);
+    const d=await r.json();
+    return d[0].map(x=>x[0]).filter(Boolean).join('');
+  }catch(e){
+    // Fallback: MyMemory API
+    try{
+      const lp=sl.split('-')[0]+'|'+tl.split('-')[0];
+      const r=await fetch('https://api.mymemory.translated.net/get?q='+encodeURIComponent(text.slice(0,500))+'&langpair='+lp);
+      const d=await r.json();
+      return d.responseData?.translatedText||text;
+    }catch(e2){
+      throw new Error('All translation services failed');
+    }
+  }
+}
+
+// Translate long markdown content: split by paragraphs, translate each
+async function translateLong(text,srcLang,tgtLang){
+  if(!text||!text.trim())return'';
+  if(srcLang===tgtLang)return text;
+  // Split by double newlines (paragraphs) to preserve structure
+  const parts=text.split(/\n{2,}/);
+  const out=[];
+  for(const p of parts){
+    if(!p.trim()){out.push(p);continue}
+    // Further chunk if too long (URL limit ~2000 chars)
+    if(p.length<=1500){
+      out.push(await translateOne(p,srcLang,tgtLang));
+    }else{
+      // split by single newlines
+      const lines=p.split('\n');
+      const lineOut=[];
+      for(const ln of lines){
+        if(!ln.trim()){lineOut.push(ln);continue}
+        lineOut.push(await translateOne(ln,srcLang,tgtLang));
+      }
+      out.push(lineOut.join('\n'));
+    }
+    // Small delay to avoid rate limit
+    await new Promise(r=>setTimeout(r,150));
+  }
+  return out.join('\n\n');
+}
+
+// ══════════════════════════════════════════════════════════════
+// LOGIN
+// ══════════════════════════════════════════════════════════════
+function rLogin(){return`<div class="w"><div class="lb">
+<div class="lb-ic"><svg viewBox="0 0 32 32" width="56" height="56" fill="none"><circle cx="16" cy="16" r="14" fill="var(--grn)" opacity=".14"/><circle cx="16" cy="16" r="10" stroke="var(--grn)" stroke-width="2" fill="none"/><circle cx="16" cy="16" r="4" fill="var(--grn)"/><ellipse cx="16" cy="16" rx="14" ry="5" stroke="var(--grn)" stroke-width="1.5" fill="none" transform="rotate(-25 16 16)" opacity=".5"/></svg></div>
+<h1>有易 YouYi · 后台</h1>
+<p>请输入管理密码继续</p>
+<input class="lb-in" id="lp" type="password" placeholder="管理密码" onkeydown="if(event.key==='Enter')doLog()">
+<button class="lb-bt" onclick="doLog()">登录</button>
+<p class="lb-err" id="le">❌ 密码错误</p>
+<a class="lb-back" href="/">← 返回网站首页</a>
+</div></div>`}
+
+function doLog(){
+  const p=$('#lp').value;
+  if(p===D.pw){AL=true;sessionStorage.setItem('csp_auth','1');render()}
+  else{$('#le').style.display='block'}
+}
+
+// ══════════════════════════════════════════════════════════════
+// ADMIN PANELS
+// ══════════════════════════════════════════════════════════════
+function rAdmin(){return`<div class="w">
+<div class="ah">
+<div class="ah-l">
+<svg viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="14" fill="var(--grn)" opacity=".14"/><circle cx="16" cy="16" r="10" stroke="var(--grn)" stroke-width="2" fill="none"/><circle cx="16" cy="16" r="4" fill="var(--grn)"/></svg>
+<h1>有易 YouYi · 后台</h1>
+<span>v4 · 4语言支持</span>
+</div>
+<div class="ah-r">
+<button class="b b-o" onclick="window.open('/','_blank')">🌐 查看网站</button>
+<button class="b b-o" onclick="sessionStorage.removeItem('csp_auth');AL=false;render()">🚪 退出</button>
+</div>
+</div>
+
+<div class="qn">
+<a onclick="document.getElementById('p-site').scrollIntoView({behavior:'smooth'})">⚙ 网站设置</a>
+<a onclick="document.getElementById('p-coins').scrollIntoView({behavior:'smooth'})">💰 币种管理</a>
+<a onclick="document.getElementById('p-exs').scrollIntoView({behavior:'smooth'})">🏦 交易所</a>
+<a onclick="document.getElementById('p-arts').scrollIntoView({behavior:'smooth'})">📝 文章管理</a>
+<a onclick="document.getElementById('p-data').scrollIntoView({behavior:'smooth'})">💾 数据管理</a>
+</div>
+
+${EA!==null?rArtEditor():`
+<section class="pn" id="p-site">${rSite()}</section>
+<section class="pn" id="p-coins">${rCoins()}</section>
+<section class="pn" id="p-exs">${rExs()}</section>
+<section class="pn" id="p-arts">${rArts()}</section>
+<section class="pn" id="p-data">${rData()}</section>
+`}
+</div>`}
+
+// ══════════════════════════════════════════════════════════════
+// SITE SETTINGS
+// ══════════════════════════════════════════════════════════════
+function rSite(){return`
+<div class="pn-h"><h2><i>⚙</i> 网站设置</h2></div>
+<div class="tg-box">
+<div class="tg-row">
+<div><div class="tg-lbl">🌍 自动翻译功能（全局）</div><div class="tg-hint">启用后，在文章编辑器中可以一键自动翻译到英文、韩文和繁体中文</div></div>
+<label class="tg-sw"><input type="checkbox" id="atg" ${D.autoTL?'checked':''}><span class="tg-sl"></span></label>
+</div>
+</div>
+<div class="r"><label>管理密码</label><input id="s_pw" value="${es(D.pw)}"><div class="hp">修改后下次登录使用新密码（当前会话不受影响）</div></div>
+<div class="ba"><button class="b b-g" onclick="svSite()">💾 保存设置</button></div>`}
+function svSite(){D.pw=$('#s_pw').value||'admin888';D.autoTL=$('#atg').checked?1:0;sv(D);tst('✓ 网站设置已保存')}
+
+// ══════════════════════════════════════════════════════════════
+// COINS
+// ══════════════════════════════════════════════════════════════
+function rCoins(){return`
+<div class="pn-h"><h2><i>💰</i> 币种管理</h2></div>
+<p class="pn-hp">首页行情和K线页面同步，数据源：OKX 交易所实时API</p>
+<div id="cL">${D.coins.map((c,i)=>`<div class="ci">
+<input value="${es(c.inst)}" placeholder="BTC-USDT" style="max-width:130px" data-f="inst" data-i="${i}">
+<input value="${es(c.sym)}" placeholder="符号" style="max-width:55px" data-f="sym" data-i="${i}">
+<input value="${es(c.tv)}" placeholder="OKX:BTCUSDT" style="max-width:150px" data-f="tv" data-i="${i}">
+<input value="${es(c.color)}" type="color" style="max-width:36px;padding:2px;height:30px" data-f="color" data-i="${i}">
+<label class="cb"><input type="checkbox" ${c.on?'checked':''} data-f="on" data-i="${i}"> 启用</label>
+<button class="ci-rm" onclick="D.coins.splice(${i},1);sv(D);render()" style="background:none;border:none;color:var(--red);cursor:pointer;font-size:14px">✕</button>
+</div>`).join('')}</div>
+<div class="ba"><button class="b b-g" onclick="svC()">💾 保存币种</button><button class="b b-o" onclick="D.coins.push({inst:'',sym:'',tv:'',color:'#888888',on:1});sv(D);render()">+ 添加</button></div>
+<div style="margin-top:14px;padding:12px;background:var(--bg);border-radius:7px;border:1px solid var(--bd);font-size:11px;color:var(--tx3);line-height:1.7"><b style="color:var(--tx2)">说明：</b> OKX交易对如 BTC-USDT, ETH-USDT | TradingView代码如 OKX:BTCUSDT | 币种名称本地化在 index.html 的 T.coin_names 中配置</div>`}
+function svC(){$$('#cL .ci').forEach((el,i)=>{if(!D.coins[i])return;$$('input',el).forEach(inp=>{const f=inp.dataset.f,idx=+inp.dataset.i;if(!D.coins[idx])return;if(f==='on')D.coins[idx].on=inp.checked?1:0;else if(f)D.coins[idx][f]=inp.value})});D.coins=D.coins.filter(c=>c.inst&&c.sym);sv(D);tst('✓ 币种已保存')}
+
+// ══════════════════════════════════════════════════════════════
+// EXCHANGES
+// ══════════════════════════════════════════════════════════════
+function rExs(){return`
+<div class="pn-h"><h2><i>🏦</i> 交易所设置</h2></div>
+<p class="pn-hp">修改推荐链接，可包含你的返佣码</p>
+${D.exs.map((ex,i)=>`<div style="padding:14px;background:var(--bg);border:1px solid var(--bd);border-radius:8px;margin-bottom:10px">
+<h4 style="font-size:13px;font-weight:600;margin-bottom:10px;display:flex;align-items:center;gap:8px">${['OKX','Binance','Bybit'][i]} ${ex.ft?'<span style="font-size:10px;color:var(--grn)">⭐ 推荐</span>':''}
+<label class="cb" style="margin-left:auto"><input type="checkbox" ${ex.ft?'checked':''} onchange="D.exs[${i}].ft=this.checked?1:0"> 标为推荐</label></h4>
+<div class="r"><label>推荐/注册链接</label><input value="${es(ex.url)}" placeholder="https://..." onchange="D.exs[${i}].url=this.value"></div>
+</div>`).join('')}
+<div class="ba"><button class="b b-g" onclick="sv(D);tst('✓ 交易所已保存')">💾 保存</button></div>`}
+
+// ══════════════════════════════════════════════════════════════
+// ARTICLES LIST
+// ══════════════════════════════════════════════════════════════
+function rArts(){return`
+<div class="pn-h"><h2><i>📝</i> 文章管理</h2><button class="b b-g" onclick="EA=-1;render()">+ 新建文章</button></div>
+${D.arts.length===0?'<p style="color:var(--tx3);text-align:center;padding:32px">暂无文章，点击右上角新建</p>':''}
+${D.arts.map(a=>{const ls=['zh','zh-TW','en','ko'];const ldn={zh:'简',['zh-TW']:'繁',en:'EN',ko:'한'};
+return`<div class="al"><div><h4>${es(a.title?.zh||a.title?.en||a.title?.['zh-TW']||a.title?.ko||'(无标题)')}<span class="lb-indi">${ls.map(l=>`<span class="${a.title?.[l]?'on':''}">${ldn[l]}</span>`).join('')}</span></h4><div class="am">${a.date} · ${a.pub?'<span style="color:var(--grn)">已发布</span>':'草稿'}</div></div>
+<div style="display:flex;gap:5px"><button class="b b-o" style="padding:5px 12px;font-size:11px" onclick="EA=${a.id};render()">✎ 编辑</button><button class="b b-r" style="padding:5px 12px;font-size:11px" onclick="if(confirm('删除此文章？')){D.arts=D.arts.filter(x=>x.id!==${a.id});sv(D);render()}">🗑 删除</button></div>
+</div>`}).join('')}`}
+
+// ══════════════════════════════════════════════════════════════
+// ARTICLE EDITOR (with auto-translation)
+// ══════════════════════════════════════════════════════════════
+function rArtEditor(){
+const a=EA===-1?{id:Date.now(),date:new Date().toISOString().slice(0,10),pub:0,title:{zh:'','zh-TW':'',en:'',ko:''},exc:{zh:'','zh-TW':'',en:'',ko:''},cnt:{zh:'','zh-TW':'',en:'',ko:''},tag:{zh:'','zh-TW':'',en:'',ko:''}}:D.arts.find(x=>x.id===EA);
+if(!a){EA=null;return rAdmin()}
+// Ensure all lang fields exist
+['title','exc','cnt','tag'].forEach(f=>{if(!a[f])a[f]={};['zh','zh-TW','en','ko'].forEach(l=>{if(!(l in a[f]))a[f][l]=''})});
+
+return`<section class="pn">
+<div class="pn-h">
+<h2><i>${EA===-1?'✨':'✎'}</i> ${EA===-1?'新建文章':'编辑文章'}</h2>
+<button class="b b-o" onclick="EA=null;render()">← 返回列表</button>
+</div>
+
+<div class="tg-box">
+<div class="tg-row">
+<div class="tg-lbl">🌍 自动翻译</div>
+<label class="cb"><input type="checkbox" id="art_at" ${D.autoTL?'checked':''}> 保存时自动翻译到其他语言</label>
+</div>
+<div class="tg-hint">📌 在中文（简体）输入内容后，点击各语言区的「⚡ 翻译」按钮，或使用下方「一键翻译全部」按钮</div>
+</div>
+
+<div class="row2">
+<div class="r"><label>发布日期</label><input id="ed" type="date" value="${a.date}"></div>
+<div class="r"><label style="display:flex;align-items:center;justify-content:space-between">状态 <label class="cb"><input type="checkbox" id="ep" ${a.pub?'checked':''}> 公开发布</label></label><div style="height:36px"></div></div>
+</div>
+
+<div class="ba" style="margin-bottom:10px;padding:12px;background:var(--bg);border-radius:8px;border:1px solid var(--bd)">
+<button class="b b-y" onclick="trAll()">⚡ 一键翻译全部（中文→英/繁/韩）</button>
+<span style="font-size:11px;color:var(--tx3);align-self:center;margin-left:8px">需填写中文后再点击</span>
+</div>
+<div class="prog" id="prog"></div>
+
+<!-- ZH (SOURCE) -->
+<div class="lang-block" style="border-color:rgba(0,245,196,.2)">
+<div class="lang-block-h"><span class="lbl-tag zh">🇨🇳 中文简体（原文）</span></div>
+<div class="r"><label>标题</label><input id="t_zh" value="${es(a.title.zh)}"></div>
+<div class="r"><label>摘要</label><textarea id="e_zh" rows="2" style="min-height:60px">${es(a.exc.zh)}</textarea></div>
+<div class="r"><label>标签</label><input id="g_zh" value="${es(a.tag.zh)}" style="max-width:240px"></div>
+<div class="r"><label>内容（Markdown 格式）</label><textarea id="c_zh" rows="12">${es(a.cnt.zh)}</textarea><div class="hp">支持 ## 标题、**粗体**、*斜体*、&gt; 引用、- 列表等</div></div>
+</div>
+
+${['en','zh-TW','ko'].map(l=>{const info={en:{flag:'🇺🇸',nm:'English'},['zh-TW']:{flag:'🇹🇼',nm:'繁體中文'},ko:{flag:'🇰🇷',nm:'한국어'}}[l];return`
+<div class="lang-block">
+<div class="lang-block-h"><span class="lbl-tag">${info.flag} ${info.nm}</span>
+<div style="display:flex;gap:6px;flex-wrap:wrap">
+<button class="b b-y" onclick="trField('title','${l}')">⚡ 翻译标题</button>
+<button class="b b-y" onclick="trField('exc','${l}')">⚡ 翻译摘要</button>
+<button class="b b-y" onclick="trField('cnt','${l}')">⚡ 翻译内容</button>
+<button class="b b-y" onclick="trField('tag','${l}')">⚡ 翻译标签</button>
+<button class="b b-b" onclick="trLang('${l}')">⚡⚡ 全部字段</button>
+</div>
+</div>
+<div class="r"><label>Title / 标题</label><input id="t_${l}" value="${es(a.title[l])}"></div>
+<div class="r"><label>Excerpt / 摘要</label><textarea id="e_${l}" rows="2" style="min-height:60px">${es(a.exc[l])}</textarea></div>
+<div class="r"><label>Tag / 标签</label><input id="g_${l}" value="${es(a.tag[l])}" style="max-width:240px"></div>
+<div class="r"><label>Content / 内容</label><textarea id="c_${l}" rows="10">${es(a.cnt[l])}</textarea></div>
+</div>`}).join('')}
+
+<div class="ba" style="position:sticky;bottom:0;background:var(--bg2);padding:14px;border-top:1px solid var(--bd);margin:20px -24px -24px;border-radius:0 0 var(--r2) var(--r2);z-index:10">
+<button class="b b-g" onclick="svArt(${a.id})" style="font-size:13px;padding:10px 22px">💾 保存文章</button>
+<button class="b b-o" onclick="EA=null;render()">取消</button>
+</div>
+</section>`}
+
+// Read current editor state
+function readEd(){
+  const ls=['zh','zh-TW','en','ko'];
+  const o={title:{},exc:{},cnt:{},tag:{}};
+  ls.forEach(l=>{
+    o.title[l]=$('#t_'+l).value;
+    o.exc[l]=$('#e_'+l).value;
+    o.cnt[l]=$('#c_'+l).value;
+    o.tag[l]=$('#g_'+l).value;
+  });
+  o.date=$('#ed').value;
+  o.pub=$('#ep').checked?1:0;
+  return o;
+}
+
+// Translate a single field to one target language
+async function trField(field,tgtLang){
+  const src=$('#'+field[0]+'_zh').value;
+  if(!src||!src.trim()){tst('中文原文为空','err');return}
+  const btn=event.target;btn.disabled=true;btn.textContent='翻译中...';
+  try{
+    const fn=(field==='cnt'||field==='exc')?translateLong:translateOne;
+    const res=await fn(src,'zh',tgtLang);
+    $('#'+field[0]+'_'+tgtLang).value=res;
+    tst('✓ 翻译完成');
+  }catch(e){tst('翻译失败: '+e.message,true)}
+  btn.disabled=false;btn.textContent=btn.textContent.replace('翻译中...','⚡ 翻译'+({title:'标题',exc:'摘要',cnt:'内容',tag:'标签'}[field]||''));
+}
+
+// Translate all fields to one target language
+async function trLang(tgtLang){
+  const src_t=$('#t_zh').value,src_e=$('#e_zh').value,src_c=$('#c_zh').value,src_g=$('#g_zh').value;
+  if(!src_t.trim()&&!src_c.trim()){tst('中文内容为空','err');return}
+  const btn=event.target;btn.disabled=true;
+  const p=$('#prog');p.classList.add('sh');p.textContent='翻译中: '+tgtLang+' ...';
+  try{
+    if(src_t.trim()){p.textContent='['+tgtLang+'] 翻译标题中...';$('#t_'+tgtLang).value=await translateOne(src_t,'zh',tgtLang)}
+    if(src_g.trim()){p.textContent='['+tgtLang+'] 翻译标签中...';$('#g_'+tgtLang).value=await translateOne(src_g,'zh',tgtLang)}
+    if(src_e.trim()){p.textContent='['+tgtLang+'] 翻译摘要中...';$('#e_'+tgtLang).value=await translateLong(src_e,'zh',tgtLang)}
+    if(src_c.trim()){p.textContent='['+tgtLang+'] 翻译内容中...';$('#c_'+tgtLang).value=await translateLong(src_c,'zh',tgtLang)}
+    p.textContent='✓ '+tgtLang+' 翻译完成';setTimeout(()=>p.classList.remove('sh'),1500);
+    tst('✓ '+tgtLang+' 翻译完成');
+  }catch(e){p.textContent='❌ 翻译失败: '+e.message;tst('翻译失败','err')}
+  btn.disabled=false;
+}
+
+// Translate to all 3 target languages
+async function trAll(){
+  const src_t=$('#t_zh').value,src_c=$('#c_zh').value;
+  if(!src_t.trim()&&!src_c.trim()){tst('请先填写中文内容','err');return}
+  const btn=event.target;btn.disabled=true;btn.textContent='翻译中...';
+  const p=$('#prog');p.classList.add('sh');
+  const targets=['en','zh-TW','ko'];
+  try{
+    for(const lg of targets){
+      p.textContent='翻译到 '+lg+' ...';
+      const src_e=$('#e_zh').value,src_g=$('#g_zh').value;
+      if(src_t.trim())$('#t_'+lg).value=await translateOne(src_t,'zh',lg);
+      if(src_g.trim())$('#g_'+lg).value=await translateOne(src_g,'zh',lg);
+      if(src_e.trim())$('#e_'+lg).value=await translateLong(src_e,'zh',lg);
+      if($('#c_zh').value.trim())$('#c_'+lg).value=await translateLong($('#c_zh').value,'zh',lg);
+    }
+    p.textContent='✓ 全部翻译完成！';setTimeout(()=>p.classList.remove('sh'),2000);
+    tst('✓ 已翻译到英文、繁体、韩文');
+  }catch(e){p.textContent='❌ 翻译失败: '+e.message;tst('翻译失败: '+e.message,true)}
+  btn.disabled=false;btn.textContent='⚡ 一键翻译全部（中文→英/繁/韩）';
+}
+
+async function svArt(id){
+  const o=readEd();
+  const autoT=$('#art_at').checked;
+  // If auto-translate is on and Chinese has content but other langs are empty, translate them
+  if(autoT&&o.title.zh&&o.title.zh.trim()){
+    const p=$('#prog');p.classList.add('sh');
+    try{
+      for(const lg of ['en','zh-TW','ko']){
+        if(!o.title[lg]?.trim()&&o.title.zh){p.textContent='自动翻译 '+lg+' 标题...';o.title[lg]=await translateOne(o.title.zh,'zh',lg)}
+        if(!o.exc[lg]?.trim()&&o.exc.zh){p.textContent='自动翻译 '+lg+' 摘要...';o.exc[lg]=await translateLong(o.exc.zh,'zh',lg)}
+        if(!o.cnt[lg]?.trim()&&o.cnt.zh){p.textContent='自动翻译 '+lg+' 内容...';o.cnt[lg]=await translateLong(o.cnt.zh,'zh',lg)}
+        if(!o.tag[lg]?.trim()&&o.tag.zh){p.textContent='自动翻译 '+lg+' 标签...';o.tag[lg]=await translateOne(o.tag.zh,'zh',lg)}
+      }
+      p.classList.remove('sh');
+    }catch(e){p.textContent='自动翻译失败，仅保存已填写内容';setTimeout(()=>p.classList.remove('sh'),2000)}
+  }
+  const art={id,...o};
+  const i=D.arts.findIndex(x=>x.id===id);
+  if(i>=0)D.arts[i]=art;else D.arts.unshift(art);
+  sv(D);EA=null;render();tst('✓ 文章已保存');
+}
+
+// ══════════════════════════════════════════════════════════════
+// DATA
+// ══════════════════════════════════════════════════════════════
+function rData(){return`
+<div class="pn-h"><h2><i>💾</i> 数据管理</h2></div>
+<p class="pn-hp">数据保存在浏览器本地存储中。建议定期导出备份，或用于在不同设备同步。</p>
+<div class="ba">
+<button class="b b-g" onclick="xpD()">📥 导出 JSON 备份</button>
+<button class="b b-o" onclick="document.getElementById('iF').click()">📤 导入 JSON</button>
+<button class="b b-r" onclick="if(confirm('⚠️ 确定重置所有数据？此操作不可恢复！')){localStorage.removeItem('csp3');D=ld();render();tst('✓ 已重置为默认')}">🗑 重置为默认数据</button>
+</div>
+<input type="file" id="iF" accept=".json" style="display:none" onchange="ipD(event)">
+<div style="margin-top:16px;padding:14px;background:var(--bg);border-radius:8px;border:1px solid var(--bd);font-size:11.5px;color:var(--tx3);line-height:1.8">
+<b style="color:var(--tx2)">使用建议：</b><br>
+📌 每次修改后导出备份<br>
+📌 在不同设备管理：导出 → 在另一设备导入<br>
+📌 更换浏览器前务必先导出<br>
+📌 导入会覆盖所有当前数据
+</div>`}
+function xpD(){const b=new Blob([JSON.stringify(D,null,2)],{type:'application/json'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download='youyi_'+new Date().toISOString().slice(0,10)+'.json';a.click();URL.revokeObjectURL(u);tst('✓ 已导出备份')}
+function ipD(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{try{D={...JSON.parse(JSON.stringify(DF)),...JSON.parse(ev.target.result)};sv(D);render();tst('✓ 导入成功')}catch(err){tst('文件格式错误','err')}};r.readAsText(f);e.target.value=''}
+
+// ══════════════════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════════════════
+function render(){document.getElementById('app').innerHTML=AL?rAdmin():rLogin()}
+render();
+</script>
+</body>
+</html>

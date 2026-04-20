@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+Disallow: /mgr-
+Disallow: /admin
+Disallow: /login
+Disallow: /manage
+
+Sitemap: https://theouyi.com/sitemap.xml
+
+Crawl-delay: 1
