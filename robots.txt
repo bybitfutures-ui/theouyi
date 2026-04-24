@@ -1,10 +1,59 @@
+# YouYi 有易 — robots.txt
+# https://theouyi.com/
+
 User-agent: *
 Allow: /
 Disallow: /mgr-
 Disallow: /admin
 Disallow: /login
 Disallow: /manage
+Disallow: /api/
+Disallow: /*?*
+Crawl-delay: 1
+
+# Major search engines — full access
+User-agent: Googlebot
+Allow: /
+Disallow: /mgr-
+Disallow: /admin
+
+User-agent: Googlebot-Image
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+Disallow: /mgr-
+Disallow: /admin
+
+User-agent: Yeti
+Allow: /
+Disallow: /mgr-
+
+User-agent: DuckDuckBot
+Allow: /
+Disallow: /mgr-
+
+User-agent: Baiduspider
+Allow: /
+Disallow: /mgr-
+Crawl-delay: 3
+
+# Block AI training crawlers if desired (optional, comment out to allow)
+User-agent: GPTBot
+Disallow: /
+User-agent: ChatGPT-User
+Disallow: /
+User-agent: CCBot
+Disallow: /
+User-agent: Claude-Web
+Disallow: /
+
+# Block aggressive SEO crawlers
+User-agent: AhrefsBot
+Crawl-delay: 10
+User-agent: SemrushBot
+Crawl-delay: 10
+User-agent: MJ12bot
+Disallow: /
 
 Sitemap: https://theouyi.com/sitemap.xml
-
-Crawl-delay: 1
