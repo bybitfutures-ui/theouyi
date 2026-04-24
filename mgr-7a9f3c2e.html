@@ -144,6 +144,21 @@ input:checked+.tg-sl::before{transform:translateX(20px);background:var(--grn)}
 .help-bx td{padding:9px 4px;border-bottom:1px solid var(--bd);line-height:1.6}
 .help-bx kbd{background:var(--bg3);border:1px solid var(--bd);border-radius:5px;padding:2px 8px;font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;color:var(--grn);display:inline-block;min-width:22px;text-align:center}
 .help-bx .kbs{display:flex;gap:4px;flex-wrap:wrap}
+
+/* Exchange card editor */
+.ex-card{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r2);padding:18px;margin-bottom:14px}
+.ex-head{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding-bottom:14px;border-bottom:1px solid var(--bd);margin-bottom:4px}
+.ex-handle{display:flex;gap:4px}
+.ex-logo{width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:800;font-family:'Outfit',sans-serif;font-size:14px;flex-shrink:0}
+.ex-lang{margin-top:14px;background:var(--bg);border:1px solid var(--bd);border-radius:9px;padding:14px}
+.ex-lang summary{cursor:pointer;font-size:13px;font-weight:600;color:var(--tx2);padding:4px 0;user-select:none}
+.ex-lang[open]{padding-bottom:14px}
+.lang-row{display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap}
+.lang-row>input{flex:1;min-width:100px}
+.lang-tag{display:inline-block;padding:4px 10px;border-radius:99px;font-size:11px;font-weight:700;background:var(--bg3);color:var(--tx2);min-width:48px;text-align:center}
+
+/* Link management */
+.link-group{background:var(--bg);border:1px solid var(--bd);border-radius:var(--r);padding:18px}
 </style>
 </head>
 <body>
@@ -156,11 +171,101 @@ input:checked+.tg-sl::before{transform:translateX(20px);background:var(--grn)}
 // ══════════════════════════════════════════════════════════════
 const DF={
 coins:[{inst:'BTC-USDT',sym:'BTC',tv:'OKX:BTCUSDT',color:'#f7931a',on:1},{inst:'ETH-USDT',sym:'ETH',tv:'OKX:ETHUSDT',color:'#627eea',on:1},{inst:'SOL-USDT',sym:'SOL',tv:'OKX:SOLUSDT',color:'#9945ff',on:1},{inst:'DOGE-USDT',sym:'DOGE',tv:'OKX:DOGEUSDT',color:'#c2a633',on:1},{inst:'XRP-USDT',sym:'XRP',tv:'OKX:XRPUSDT',color:'#00aae4',on:1},{inst:'ADA-USDT',sym:'ADA',tv:'OKX:ADAUSDT',color:'#0033ad',on:1}],
-exs:[{id:'okx',url:'https://www.okx.com/',ft:1},{id:'binance',url:'https://www.binance.com/',ft:0},{id:'bybit',url:'https://www.bybit.com/',ft:0}],
-arts:[]
+exs:[
+  {id:'okx',url:'https://www.okx.com/',ft:1,logo:'OK',color:'#00f5c4',
+    name:{zh:'欧易 OKX','zh-TW':'歐易 OKX',en:'OKX',ko:'OKX'},
+    sub:{zh:'全球领先加密资产交易平台','zh-TW':'全球領先加密資產交易平台',en:'Leading global crypto exchange',ko:'글로벌 선도 암호화폐 거래소'},
+    features:{
+      zh:['0.08% maker / 0.1% taker 低费率','300+ 币种现货交易','完善的 C2C 法币通道','iOS / Android 原生应用','Proof of Reserves 公开审计'],
+      'zh-TW':['0.08% maker / 0.1% taker 低費率','300+ 幣種現貨交易','完善的 C2C 法幣通道','iOS / Android 原生應用','Proof of Reserves 公開審計'],
+      en:['Spot fees from 0.08% maker','300+ crypto trading pairs','P2P fiat on/off-ramps','Native iOS & Android apps','Proof of Reserves audited'],
+      ko:['메이커 0.08% / 테이커 0.1% 저수수료','300+ 암호화폐 현물 거래','완비된 C2C 법정화폐 채널','iOS / Android 네이티브 앱','Proof of Reserves 공개 감사']
+    }
+  },
+  {id:'binance',url:'https://www.binance.com/',ft:0,logo:'BN',color:'#f0b41e',
+    name:{zh:'币安 Binance','zh-TW':'幣安 Binance',en:'Binance',ko:'바이낸스'},
+    sub:{zh:'全球交易量最大的交易所','zh-TW':'全球交易量最大的交易所',en:'Largest exchange by volume',ko:'세계 최대 거래량 거래소'},
+    features:{
+      zh:['500+ 交易对','全球流动性最佳','丰富的衍生品市场','Binance Earn 理财产品','Launchpad 新币首发'],
+      'zh-TW':['500+ 交易對','全球流動性最佳','豐富的衍生品市場','Binance Earn 理財產品','Launchpad 新幣首發'],
+      en:['500+ trading pairs','Highest global liquidity','Extensive derivatives','Binance Earn yield products','Launchpad for new tokens'],
+      ko:['500+ 거래쌍','글로벌 최고 유동성','풍부한 파생상품 시장','Binance Earn 수익 상품','Launchpad 신규 토큰']
+    }
+  },
+  {id:'bybit',url:'https://www.bybit.com/',ft:0,logo:'BY',color:'#ff8a3a',
+    name:{zh:'Bybit','zh-TW':'Bybit',en:'Bybit',ko:'Bybit'},
+    sub:{zh:'专业加密衍生品交易所','zh-TW':'專業加密衍生品交易所',en:'Pro crypto derivatives',ko:'전문 암호화폐 파생상품 거래소'},
+    features:{
+      zh:['高达 100 倍永续合约','超快撮合引擎','跟单交易功能','子账户支持','API 友好，适合量化交易'],
+      'zh-TW':['高達 100 倍永續合約','超快撮合引擎','跟單交易功能','子帳戶支援','API 友好，適合量化交易'],
+      en:['Up to 100x perpetuals','Ultra-fast order matching','Copy trading feature','Sub-account support','API-friendly for traders'],
+      ko:['최대 100배 무기한 계약','초고속 주문 매칭','카피 트레이딩 지원','서브계정 지원','API 친화적, 퀀트 트레이딩 적합']
+    }
+  }
+],
+links:{
+  primaryCTA:'',
+  registerCTA:'',
+  social:[
+    {name:'Twitter',url:'',icon:'𝕏'},
+    {name:'Telegram',url:'',icon:'✈'},
+    {name:'GitHub',url:'',icon:'⌥'}
+  ],
+  friends:[]
+},
+arts:[
+  {id:1001,date:'',pub:1,featured:1,
+    title:{zh:'2025 年加密货币交易所怎么选？新手完全指南','zh-TW':'2025 年加密貨幣交易所怎麼選？新手完全指南',en:'How to Choose a Crypto Exchange in 2025: Complete Beginner Guide',ko:'2025년 암호화폐 거래소 선택 방법: 초보자 완전 가이드'},
+    exc:{zh:'从 0 开始选一家可靠的加密交易所，需要关注哪 7 个关键指标？本文结合全球监管趋势和真实用户数据，给你一份彻底避坑的新手清单。','zh-TW':'從 0 開始選一家可靠的加密交易所，需要關注哪 7 個關鍵指標？本文結合全球監管趨勢和真實用戶數據，給你一份徹底避坑的新手清單。',en:'Starting from zero, which 7 metrics should you check when picking a reliable crypto exchange? Based on global regulation trends and real user data.',ko:'0부터 시작해 신뢰할 수 있는 암호화폐 거래소를 고를 때 꼭 봐야 할 7가지 지표. 글로벌 규제 동향과 실제 사용자 데이터 기반 완전한 체크리스트.'},
+    tag:{zh:'新手指南','zh-TW':'新手指南',en:'Beginner Guide',ko:'초보 가이드'},
+    cnt:{
+      zh:`选择加密货币交易所是你进入加密世界的**第一步**，也是最容易踩坑的一步。本文根据 2025 年最新监管环境和实测经验，帮你彻底理清思路。\n\n## 为什么交易所的选择这么重要？\n\n交易所掌管你的资产、你的身份验证信息，甚至决定你能接触哪些币种。选错了，可能面临资金冻结、提现困难、甚至平台跑路的风险。2022 年 FTX 暴雷是最惨痛的教训。\n\n## 7 个必看指标\n\n### 1. 合规牌照\n优先选择拿到**多国金融监管牌照**的平台。比如美国 MSB、欧盟 MiCA、香港 VASP 等。\n\n### 2. Proof of Reserves（储备金证明）\n这是 FTX 事件后行业自发建立的透明度机制。交易所需要**定期公开链上地址**，证明用户资产 100% 对应真实储备。\n\n### 3. 交易深度\n打开交易所的 BTC/USDT 交易对，看**买一和卖一的挂单量**。流动性差的交易所会有严重滑点。\n\n### 4. 费率结构\n- **Maker / Taker 费率**：OKX 0.08% / 0.1% 是目前头部最低\n- **提币费**：不同币种差异很大，定期关注\n- **隐藏费用**：警惕所谓"零手续费"背后的点差\n\n### 5. 法币通道\n- 本地银行卡充提（信用卡、借记卡）\n- P2P/C2C 点对点交易\n- 第三方支付合作（Apple Pay 等）\n\n### 6. 用户端安全\n- 强制开启 2FA（Google Authenticator）\n- 资金密码和登录密码分离\n- 提现白名单\n\n### 7. 客服响应速度\n深夜发工单，看多久能收到真人回复。遇到问题时这可能决定你的资产安全。\n\n## 2025 年推荐的三家主流交易所\n\n### OKX（综合推荐）\n- 合规：获得香港 VASP、阿联酋 VARA 等多国牌照\n- 透明度：每月公布 Merkle Tree Proof of Reserves\n- 费率：新户可领取手续费折扣\n- 缺点：美国用户无法使用\n\n### Binance（流量最大）\n- 合规：多国分支机构持牌运营\n- 交易对最丰富，流动性第一\n- Launchpad 新项目首发\n- 缺点：对中国大陆和美国纽约州用户有限制\n\n### Bybit（衍生品首选）\n- 专业衍生品平台，最高 100 倍杠杆\n- API 友好，量化交易者首选\n- 跟单交易功能成熟\n- 缺点：现货币种数量少于 OKX\n\n## 新手实操建议\n\n1. **不要只用一家交易所**。资产分散到 2-3 家是基本原则\n2. **小额测试提现流程**再开始大额交易\n3. **开启 2FA + 白名单**是最基本的安全措施\n4. **保留每次交易记录**，涉及税务申报\n\n## 结语\n\n选择交易所就像选银行。要看监管、看透明度、看费率、看服务。2025 年的加密世界已经比几年前成熟很多，但"**不要把所有资产放在一个篮子**"这条铁律永远不会过时。`,
+      'zh-TW':'','en':'','ko':''
+    }
+  },
+  {id:1002,date:'',pub:1,featured:1,
+    title:{zh:'OKX 注册全流程图解（含 KYC、安全设置）2025 最新','zh-TW':'OKX 註冊全流程圖解（含 KYC、安全設定）2025 最新',en:'Complete OKX Registration Guide with KYC & Security Setup (2025)',ko:'OKX 가입 전 과정 가이드 (KYC·보안 설정 포함) 2025 최신판'},
+    exc:{zh:'从注册账号到完成 KYC、开启二次验证、绑定银行卡，本文把 OKX 注册全流程拆成 12 步逐一图解，新手 15 分钟就能完成。','zh-TW':'從註冊帳號到完成 KYC、開啟二次驗證、綁定銀行卡，本文把 OKX 註冊全流程拆成 12 步逐一圖解，新手 15 分鐘就能完成。',en:'From account creation to KYC, 2FA, and card binding — we break down OKX onboarding into 12 easy steps. Beginners complete it in 15 minutes.',ko:'계정 생성부터 KYC, 2단계 인증, 카드 연동까지 — OKX 가입 전 과정을 12단계로 나누어 설명합니다. 초보자도 15분이면 완료.'},
+    tag:{zh:'OKX教程','zh-TW':'OKX教程',en:'OKX Tutorial',ko:'OKX 튜토리얼'},
+    cnt:{
+      zh:`本文是 2025 年 OKX 注册的**完整操作指南**，覆盖从零到完成第一笔法币充值的每一步。全程不超过 20 分钟。\n\n## 准备工作\n\n注册前请准备：\n\n- **邮箱或手机号**（邮箱推荐 Gmail）\n- **身份证或护照**（KYC 用）\n- **信用卡或银行卡**（可选，用于充值）\n- **Google Authenticator** 应用（手机上先装好）\n\n## 第一步：访问 OKX 官网\n\n浏览器输入 **www.okx.com**，注意网址末尾一定是 .com，避免钓鱼网站。\n\n> ⚠️ 永远只从书签或直接输入官网进入，**不要点搜索引擎的广告链接**。\n\n## 第二步：注册账号\n\n点击右上角 "Sign Up / 注册"，选择邮箱或手机号注册：\n\n- 邮箱：输入邮箱 + 设置密码（至少 8 位，包含大小写和数字）\n- 手机号：输入国家区号 + 手机号\n\n## 第三步：验证邮箱/短信\n\n收到 6 位验证码后填入，账号初步创建完成。\n\n## 第四步：完成基础信息\n\n填写：\n\n- 居住国家/地区\n- 用户协议勾选\n- 推荐码（可选，新户有手续费折扣）\n\n## 第五步：KYC 身份认证\n\n**Level 1（基础）**：\n- 填写真实姓名\n- 上传身份证/护照正反面\n- 人脸识别\n\n通常 10 分钟内审核通过。\n\n**Level 2（高级）**：\n- 地址证明（水电账单或银行对账单）\n- 用于更高提现额度\n\n## 第六步：开启 2FA（最重要）\n\n进入「安全中心」→ Google Authenticator：\n\n1. 打开手机的 Google Authenticator 应用\n2. 扫描 OKX 页面显示的二维码\n3. **把 16 位密钥抄写在纸上保存**（丢手机时的救命稻草）\n4. 输入 6 位动态码完成绑定\n\n## 第七步：设置资金密码\n\n「安全中心」→ 资金密码。这个密码**与登录密码不同**，用于提币等敏感操作。\n\n## 第八步：防钓鱼码\n\n设置一个只有你自己知道的 4-6 位字符。以后 OKX 发给你的官方邮件都会带这个码，**没有这个码的邮件都是诈骗**。\n\n## 第九步：开启白名单\n\n「提币地址管理」→ 开启白名单模式。只有预先添加的地址才能提币，即使账号被盗也能保住资产。\n\n## 第十步：首次入金\n\n选择方式：\n\n- **C2C 买币**（推荐新手）：用支付宝/微信向卖家付款，对方释放 USDT\n- **信用卡购买**：手续费较高但最快\n- **加密货币转入**：从其他钱包或交易所转入 BTC/USDT\n\n## 第十一步：买入第一笔币\n\n进入「现货交易」：\n\n1. 选择交易对（建议从 BTC/USDT 开始）\n2. 选择「限价」或「市价」单\n3. 输入金额（建议先小额测试）\n4. 确认下单\n\n## 第十二步：备份一切\n\n注册完成后：\n\n- [ ] 2FA 密钥已抄写保存（纸质）\n- [ ] 资金密码已记录（密码管理器）\n- [ ] 防钓鱼码已设置\n- [ ] 提币白名单已开启\n- [ ] 首次小额提币测试成功\n\n## 常见问题\n\n**Q：为什么我的 KYC 被拒？**\n可能原因：照片模糊、证件过期、姓名拼写错误。重新上传清晰照片通常能通过。\n\n**Q：2FA 的手机丢了怎么办？**\n用最初抄写的 16 位密钥在新手机重新添加。如果也丢了，联系客服做账号申诉（耗时较长）。\n\n**Q：C2C 交易被骗怎么办？**\n一定要选 OKX 认证的商家，通过平台的聊天系统沟通，**任何让你转微信私聊的都是骗子**。\n\n## 结语\n\n完成以上 12 步，你的 OKX 账户就是**可以放心长期使用**的状态了。记住加密世界的第一定律：**自己的安全自己守**，交易所再强大也不能替你管理 2FA 密钥。`,
+      'zh-TW':'','en':'','ko':''
+    }
+  },
+  {id:1003,date:'',pub:1,featured:0,
+    title:{zh:'加密货币交易手续费深度对比：哪家真的最省钱？','zh-TW':'加密貨幣交易手續費深度比較：哪家真的最省錢？',en:'Crypto Trading Fee Deep Comparison: Which Exchange Actually Saves You Money?',ko:'암호화폐 거래 수수료 심층 비교: 실제로 돈을 아끼는 거래소는?'},
+    exc:{zh:'除了挂牌费率，点差、资金费率、提币费、滑点都是真金白银的成本。本文用 10 万美元模拟交易测算三大交易所的实际总成本。','zh-TW':'除了掛牌費率，點差、資金費率、提幣費、滑點都是真金白銀的成本。本文用 10 萬美元模擬交易測算三大交易所的實際總成本。',en:'Beyond listed fees, spread, funding rate, withdrawal fees and slippage are all real costs. We simulate $100K trades across 3 exchanges.',ko:'게시된 수수료 외에도 스프레드, 자금 조달 수수료, 출금 수수료, 슬리피지가 모두 실제 비용입니다. 10만 달러 거래 시뮬레이션으로 비교.'},
+    tag:{zh:'费率对比','zh-TW':'費率比較',en:'Fee Comparison',ko:'수수료 비교'},
+    cnt:{
+      zh:`"**OKX 手续费最低**" 这种说法只对了一半。真实成本 = 挂牌费率 + 点差 + 提币费 + 滑点。本文用数据说话。\n\n## 什么构成你的真实成本？\n\n### 1. 挂牌费率（Fee Tier）\n\n这是最显性的成本，但不同交易所的**VIP 等级升级规则差异巨大**：\n\n- OKX：30 天交易量 > $10K 即可升到 Lv1（0.07%/0.09%）\n- Binance：30 天交易量 > $1M 才能升到 VIP1\n- Bybit：类似 Binance\n\n对**中小散户来说，OKX 升级更快**，实际费率通常更低。\n\n### 2. 点差（Spread）\n\n盘口的买卖价差。**在冷门币种上，点差可能比手续费还高 10 倍**。\n\n实测 2025 年 3 月（$100K 挂单）：\n\n| 交易对 | OKX | Binance | Bybit |\n|---|---|---|---|\n| BTC/USDT | 0.01% | 0.01% | 0.01% |\n| 某小币/USDT | 0.08% | 0.12% | 0.15% |\n\n### 3. 提币费\n\n提币费差异巨大：\n\n- BTC 提币（Bitcoin 网络）：约 $2-5\n- ETH 提币（以太坊网络）：$3-15\n- USDT-TRC20：约 $1（便宜）\n- USDT-ERC20：$5-20（贵）\n\n**结论：大额转账走 TRC20，小额或特殊用途才用 ERC20。**\n\n### 4. 资金费率（仅合约）\n\n永续合约每 8 小时结算一次资金费率，长期持仓的**年化成本可达 10% 以上**，容易被新手忽略。\n\n## 实战模拟：$100,000 月交易量\n\n假设你一个月买卖 10 次 BTC，每次 $10,000：\n\n### OKX（Lv1）\n- 手续费：10 × $10,000 × 0.09% × 2 = $180\n- 点差：10 × $10,000 × 0.01% × 2 = $20\n- 提币 1 次 BTC：$3\n- **总计：$203**\n\n### Binance（普通用户）\n- 手续费：10 × $10,000 × 0.1% × 2 = $200\n- 点差：$20\n- 提币：$5\n- **总计：$225**\n\n### Bybit（普通用户）\n- 手续费：$200\n- 点差：$20\n- 提币：$3\n- **总计：$223**\n\n**差距：约 10-12%**，一年可节省 $200+。\n\n## 如何进一步降低成本？\n\n### 1. 用 Maker 单而非 Taker 单\n\nMaker（挂单）几乎所有交易所都比 Taker（吃单）便宜 20-30%。\n\n### 2. 用原生代币抵扣\n\n- Binance 用 BNB 抵扣可省 25%\n- OKX 用 OKB 也有类似优惠\n\n### 3. 合理使用推荐码\n\n新用户通过推荐码注册，**前 30 天或 3 个月手续费通常有 20% 折扣**。\n\n### 4. 跨平台套利时注意提币成本\n\n有时候看到两家交易所同币种有 0.5% 差价，但加上两次提币费和时间成本，实际套不到多少。\n\n## 结语\n\n**低费率 ≠ 省钱**。真正的成本控制需要：\n\n- 优先用 Maker 单\n- 大额选 OKX，长期衍生品交易选 Bybit，币种丰富度选 Binance\n- 小额提现走 TRC20\n- 长期持仓避免高杠杆合约\n\n费率差距放大到年度，够买一部好手机了。`,
+      'zh-TW':'','en':'','ko':''
+    }
+  },
+  {id:1004,date:'',pub:1,featured:0,
+    title:{zh:'各国加密货币政策速览：哪些国家对加密最友好？','zh-TW':'各國加密貨幣政策速覽：哪些國家對加密最友好？',en:'Global Crypto Regulation Overview: Which Countries Are Crypto-Friendly?',ko:'국가별 암호화폐 정책 개요: 가장 친화적인 나라는?'},
+    exc:{zh:'新加坡、瑞士、阿联酋、日本、香港……全球哪些司法辖区对加密货币最友好？哪些在严打？普通用户如何合规交易？','zh-TW':'新加坡、瑞士、阿聯、日本、香港……全球哪些司法轄區對加密貨幣最友好？哪些在嚴打？普通用戶如何合規交易？',en:'Singapore, Switzerland, UAE, Japan, Hong Kong — which jurisdictions are most crypto-friendly globally? Which are cracking down?',ko:'싱가포르, 스위스, UAE, 일본, 홍콩 — 전 세계에서 암호화폐에 가장 친화적인 국가는? 엄격히 단속하는 곳은?'},
+    tag:{zh:'监管政策','zh-TW':'監管政策',en:'Regulation',ko:'규제'},
+    cnt:{
+      zh:`2025 年，加密货币监管格局已经明显分化。有的国家**主动拥抱**，设立专门牌照制度；有的国家**严防死守**，甚至直接禁止。\n\n> ⚠️ 本文仅为信息参考，不构成任何法律建议。在你所在司法辖区交易前，请自行咨询合格律师或税务顾问。\n\n## 最友好：4 个加密自由港\n\n### 🇨🇭 瑞士（Crypto Valley）\n- **楚格州（Zug）**是全球加密中心\n- 税收友好，适合长期资本利得\n- 以太坊基金会总部所在地\n- FINMA 监管清晰，对项目方友好\n\n### 🇸🇬 新加坡\n- MAS（金融管理局）发放 DPT（数字支付代币）牌照\n- 个人资本利得**免税**\n- 多家大型交易所在此注册\n- 2023 年起散户有严格投资者适当性要求\n\n### 🇦🇪 阿联酋（迪拜、阿布扎比）\n- VARA（虚拟资产监管局）2022 年成立，全球首个专设机构\n- 0 个人所得税\n- 迪拜正在打造"Web3 首都"\n- 多家头部交易所将总部迁至此\n\n### 🇸🇻 萨尔瓦多\n- 全球首个将**比特币定为法定货币**的国家（2021）\n- 政府持有大量 BTC 储备\n- 但经济体量小，实际影响有限\n\n## 清晰有序：成熟市场\n\n### 🇯🇵 日本\n- 2017 年就将加密货币纳入《支付服务法》\n- 交易所必须持 FSA 牌照\n- KYC 极其严格\n- 税收较重（最高 55%），是主要缺点\n\n### 🇭🇰 香港\n- 2023 年推出 VASP 牌照制度\n- 允许**散户交易**被许可的加密资产\n- 全球首个批准**现货 BTC/ETH ETF** 的地区之一（2024）\n- 正在建设"Web3 枢纽"\n\n### 🇪🇺 欧盟（MiCA）\n- 2024 年全面生效的《加密资产市场法规》\n- 统一 27 国监管标准\n- 稳定币发行要求严格\n- 对用户保护有利\n\n### 🇺🇸 美国\n- 各州政策差异巨大（纽约 BitLicense 最严）\n- SEC 对证券类代币态度强硬\n- 2024 年批准现货 BTC ETF 是重要里程碑\n- 合规成本高，但机构资金充足\n\n## 严格管制：有限允许\n\n### 🇰🇷 韩国\n- 5 家"大型交易所"（Upbit、Bithumb 等）合规运营\n- 必须绑定**实名银行账户**\n- 外国人账户受限\n- 高税率（2025 年起对交易收益征税）\n\n### 🇬🇧 英国\n- FCA 严管散户\n- 大多数衍生品对散户禁售\n- 交易所要求注册\n\n### 🇮🇳 印度\n- 不禁止但征 30% 重税 + 1% TDS\n- 事实上极大抑制交易\n- 监管仍在摇摆\n\n## 严格禁止或限制\n\n### 🇨🇳 中国大陆\n- 2021 年全面禁止加密货币交易和挖矿\n- 境外交易所不能服务大陆用户\n- 持有本身不违法，但交易渠道封闭\n\n### 其他禁止国家\n摩洛哥、埃及、孟加拉、玻利维亚、尼泊尔等。\n\n## 普通用户怎么做？\n\n### 1. 先确认你的司法辖区\n- 你的护照国 ≠ 你的税务居民国\n- **税务居民身份**决定纳税义务\n\n### 2. 选择合规交易所\n- 优先选在你所在辖区持牌的平台\n- 不要为了"低费率"用完全无监管的野鸡交易所\n\n### 3. 记录每笔交易\n- 即使低税收国家也可能要求申报\n- 用 Koinly、CoinTracker 等工具自动化\n\n### 4. 遵循反洗钱要求\n- 大额交易会触发银行系统关注\n- 保持资金来源可解释\n\n## 未来趋势\n\n2025-2026 年预计：\n\n- **稳定币立法**将在多国落地（美国、欧盟、日本）\n- **CBDC**（央行数字货币）陆续推出，可能与加密并存\n- **DeFi 监管**框架逐步成型\n- **税收规则**趋于统一（OECD CARF 框架）\n\n## 结语\n\n加密不再是法外之地。合规是长期参与加密市场的**唯一稳定路径**。选对司法辖区、选对交易所、做好记录，是新时代加密投资者的基本功。`,
+      'zh-TW':'','en':'','ko':''
+    }
+  }
+]
 };
 
-function ld(){try{const d=localStorage.getItem('csp3');const base=JSON.parse(JSON.stringify(DF));if(!d)return{...base,pw:'admin888',autoTL:1};const p=JSON.parse(d);return{...base,...p,pw:p.pw||'admin888',autoTL:p.autoTL??1}}catch(e){return{...JSON.parse(JSON.stringify(DF)),pw:'admin888',autoTL:1}}}
+function ld(){try{
+  const d=localStorage.getItem('csp3');
+  const base=JSON.parse(JSON.stringify(DF));
+  // Ensure new article defaults have a real date
+  const today=new Date().toISOString().slice(0,10);
+  base.arts.forEach(a=>{if(!a.date)a.date=today});
+  if(!d)return{...base,pw:'admin888',autoTL:1};
+  const p=JSON.parse(d);
+  return{...base,...p,pw:p.pw||'admin888',autoTL:p.autoTL??1};
+}catch(e){
+  const b=JSON.parse(JSON.stringify(DF));const today=new Date().toISOString().slice(0,10);b.arts.forEach(a=>{if(!a.date)a.date=today});
+  return{...b,pw:'admin888',autoTL:1};
+}}
 function sv(d){const {pw,autoTL,...rest}=d;const full={...rest,pw,autoTL};localStorage.setItem('csp3',JSON.stringify(full))}
 let D=ld(),AL=sessionStorage.getItem('csp_auth')==='1',EA=null;
 
@@ -343,10 +448,11 @@ function rAdmin(){
 
 <div class="qn">
 <a onclick="document.getElementById('p-site').scrollIntoView({behavior:'smooth'})">⚙ 网站设置</a>
-<a onclick="document.getElementById('p-coins').scrollIntoView({behavior:'smooth'})">💰 币种管理</a>
+<a onclick="document.getElementById('p-coins').scrollIntoView({behavior:'smooth'})">💰 币种</a>
 <a onclick="document.getElementById('p-exs').scrollIntoView({behavior:'smooth'})">🏦 交易所</a>
-<a onclick="document.getElementById('p-arts').scrollIntoView({behavior:'smooth'})">📝 文章管理</a>
-<a onclick="document.getElementById('p-data').scrollIntoView({behavior:'smooth'})">💾 数据管理</a>
+<a onclick="document.getElementById('p-links').scrollIntoView({behavior:'smooth'})">🔗 链接中心</a>
+<a onclick="document.getElementById('p-arts').scrollIntoView({behavior:'smooth'})">📝 文章</a>
+<a onclick="document.getElementById('p-data').scrollIntoView({behavior:'smooth'})">💾 数据</a>
 <a onclick="EA=-1;render()" style="background:var(--grnA);color:var(--grn);border-color:rgba(0,245,196,.3);font-weight:600">+ 新建文章</a>
 </div>
 
@@ -354,6 +460,7 @@ ${EA!==null?rArtEditor():`
 <section class="pn" id="p-site">${rSite()}</section>
 <section class="pn" id="p-coins">${rCoins()}</section>
 <section class="pn" id="p-exs">${rExs()}</section>
+<section class="pn" id="p-links">${rLinks()}</section>
 <section class="pn" id="p-arts">${rArts()}</section>
 <section class="pn" id="p-data">${rData()}</section>
 `}
@@ -395,15 +502,198 @@ function svC(){$$('#cL .ci').forEach((el,i)=>{if(!D.coins[i])return;$$('input',e
 // ══════════════════════════════════════════════════════════════
 // EXCHANGES
 // ══════════════════════════════════════════════════════════════
-function rExs(){return`
-<div class="pn-h"><h2><i>🏦</i> 交易所设置</h2></div>
-<p class="pn-hp">修改推荐链接，可包含你的返佣码</p>
-${D.exs.map((ex,i)=>`<div style="padding:14px;background:var(--bg);border:1px solid var(--bd);border-radius:8px;margin-bottom:10px">
-<h4 style="font-size:13px;font-weight:600;margin-bottom:10px;display:flex;align-items:center;gap:8px">${['OKX','Binance','Bybit'][i]} ${ex.ft?'<span style="font-size:10px;color:var(--grn)">⭐ 推荐</span>':''}
-<label class="cb" style="margin-left:auto"><input type="checkbox" ${ex.ft?'checked':''} onchange="D.exs[${i}].ft=this.checked?1:0"> 标为推荐</label></h4>
-<div class="r"><label>推荐/注册链接</label><input value="${es(ex.url)}" placeholder="https://..." onchange="D.exs[${i}].url=this.value"></div>
+function rExs(){
+  return`
+<div class="pn-h"><h2><i>🏦</i> 交易所管理 <span style="font-size:12px;color:var(--tx3);font-weight:400">${D.exs.length} 家，拖拽顺序影响网站展示</span></h2>
+<button class="b b-g" onclick="addEx()">+ 添加交易所</button></div>
+<p class="pn-hp">💡 名称、简介、特性列表支持 4 语言。排序靠前的交易所在首页优先展示。</p>
+${D.exs.map((ex,i)=>rExCard(ex,i)).join('')}
+<div class="ba" style="position:sticky;bottom:16px;background:var(--bg);padding:12px;border-radius:9px;border:1px solid var(--bd);box-shadow:0 -2px 18px rgba(0,0,0,.3);z-index:10">
+<button class="b b-g" onclick="saveExs()">💾 保存全部交易所</button>
+<button class="b b-o" onclick="render()">↶ 放弃修改</button>
+</div>`;
+}
+
+function rExCard(ex,i){
+  const ls=[{k:'zh',n:'简中'},{k:'zh-TW',n:'繁中'},{k:'en',n:'EN'},{k:'ko',n:'한'}];
+  return`<div class="ex-card" data-ix="${i}">
+<div class="ex-head">
+<div class="ex-handle">
+<button class="b b-o" style="padding:5px 9px;font-size:11px" ${i===0?'disabled':''} onclick="moveEx(${i},-1)" title="上移">↑</button>
+<button class="b b-o" style="padding:5px 9px;font-size:11px" ${i===D.exs.length-1?'disabled':''} onclick="moveEx(${i},1)" title="下移">↓</button>
+</div>
+<div class="ex-logo" style="background:${ex.color}22;color:${ex.color}">${es(ex.logo||ex.id?.slice(0,2).toUpperCase())}</div>
+<div style="flex:1;min-width:0">
+<div style="font-size:15px;font-weight:700">${es(ex.name?.zh||ex.id||'(新交易所)')}</div>
+<div style="font-size:11.5px;color:var(--tx3);font-family:'JetBrains Mono',monospace">id: ${es(ex.id||'未设置')}</div>
+</div>
+<label class="cb"><input type="checkbox" ${ex.ft?'checked':''} data-ft="${i}"> ⭐ 推荐</label>
+<button class="b b-r" style="padding:5px 10px;font-size:11px" onclick="if(confirm('删除 '+${JSON.stringify(ex.name?.zh||ex.id||'此交易所')}+'？')){D.exs.splice(${i},1);sv(D);render();tst('✓ 已删除')}">🗑</button>
+</div>
+
+<div class="row2" style="margin-top:14px">
+<div class="r"><label>ID (用于 URL，英文小写)</label><input data-ex="${i}" data-f="id" value="${es(ex.id)}" placeholder="okx, binance..."></div>
+<div class="r"><label>注册链接 (可含返佣码)</label><input data-ex="${i}" data-f="url" value="${es(ex.url)}" placeholder="https://..."></div>
+</div>
+<div class="row2">
+<div class="r"><label>Logo 文字 (2字母)</label><input data-ex="${i}" data-f="logo" value="${es(ex.logo)}" maxlength="4" placeholder="OK"></div>
+<div class="r"><label>品牌颜色</label><input data-ex="${i}" data-f="color" value="${es(ex.color)}" type="color" style="height:42px"></div>
+</div>
+
+<details class="ex-lang" open><summary>📝 4 语言名称和简介</summary>
+${ls.map(l=>`<div class="lang-row"><span class="lang-tag">${l.n}</span>
+<input data-ex="${i}" data-f="name" data-l="${l.k}" value="${es(ex.name?.[l.k]||'')}" placeholder="名称">
+<input data-ex="${i}" data-f="sub" data-l="${l.k}" value="${es(ex.sub?.[l.k]||'')}" placeholder="一句话简介">
+<button class="b b-b" style="padding:4px 9px;font-size:11px" onclick="trExField(${i},'${l.k}')" ${l.k==='zh'?'style="display:none"':''}>🌐</button>
 </div>`).join('')}
-<div class="ba"><button class="b b-g" onclick="sv(D);tst('✓ 交易所已保存')">💾 保存</button></div>`}
+</details>
+
+<details class="ex-lang"><summary>✨ 特性列表 (每行一条，4 语言)</summary>
+${ls.map(l=>`<div class="r"><label>${l.n} 特性（每行一条）</label><textarea data-ex="${i}" data-f="features" data-l="${l.k}" rows="5" style="font-family:inherit;font-size:13px">${es((ex.features?.[l.k]||[]).join('\n'))}</textarea></div>`).join('')}
+<button class="b b-b" style="margin-top:6px;padding:6px 14px;font-size:12px" onclick="trExFeatures(${i})">🌐 把简中特性翻译到其他语言</button>
+</details>
+</div>`;
+}
+
+function moveEx(i,d){
+  const t=i+d;if(t<0||t>=D.exs.length)return;
+  [D.exs[i],D.exs[t]]=[D.exs[t],D.exs[i]];
+  sv(D);render();
+}
+function addEx(){
+  const id='exchange'+(D.exs.length+1);
+  D.exs.push({id,url:'',ft:0,logo:'EX',color:'#4a94ff',
+    name:{zh:'新交易所','zh-TW':'',en:'New Exchange',ko:''},
+    sub:{zh:'','zh-TW':'',en:'',ko:''},
+    features:{zh:[],'zh-TW':[],en:[],ko:[]}
+  });
+  sv(D);render();tst('✓ 已添加，请完善信息');
+}
+function saveExs(){
+  $$('[data-ex]').forEach(inp=>{
+    const i=+inp.dataset.ex,f=inp.dataset.f,l=inp.dataset.l;
+    if(!D.exs[i])return;
+    if(f==='features'){
+      D.exs[i].features=D.exs[i].features||{};
+      D.exs[i].features[l]=inp.value.split('\n').map(s=>s.trim()).filter(Boolean);
+    }else if(l){
+      D.exs[i][f]=D.exs[i][f]||{};
+      D.exs[i][f][l]=inp.value;
+    }else{
+      D.exs[i][f]=inp.value;
+    }
+  });
+  $$('[data-ft]').forEach(cb=>{D.exs[+cb.dataset.ft].ft=cb.checked?1:0});
+  D.exs=D.exs.filter(e=>e.id);
+  sv(D);render();tst('✓ 全部交易所已保存');
+}
+async function trExField(i,tgtLang){
+  const ex=D.exs[i];const btn=event.target;const orig=btn.textContent;
+  btn.disabled=true;btn.textContent='⏳';
+  try{
+    if(ex.name?.zh&&!$(`[data-ex="${i}"][data-f="name"][data-l="${tgtLang}"]`).value){
+      $(`[data-ex="${i}"][data-f="name"][data-l="${tgtLang}"]`).value=await translateOne(ex.name.zh,'zh',tgtLang);
+    }
+    if(ex.sub?.zh&&!$(`[data-ex="${i}"][data-f="sub"][data-l="${tgtLang}"]`).value){
+      $(`[data-ex="${i}"][data-f="sub"][data-l="${tgtLang}"]`).value=await translateOne(ex.sub.zh,'zh',tgtLang);
+    }
+    tst('✓ 翻译完成');
+  }catch(e){tst('翻译失败','err')}
+  finally{btn.disabled=false;btn.textContent=orig}
+}
+async function trExFeatures(i){
+  const ex=D.exs[i];const src=ex.features?.zh||[];if(!src.length){tst('简中特性为空','err');return}
+  const btn=event.target;const orig=btn.textContent;btn.disabled=true;btn.textContent='⏳ 翻译中...';
+  try{
+    for(const lang of ['zh-TW','en','ko']){
+      const target=[];for(const line of src){target.push(await translateOne(line,'zh',lang))}
+      $(`[data-ex="${i}"][data-f="features"][data-l="${lang}"]`).value=target.join('\n');
+    }
+    tst('✓ 特性已翻译到 3 语');
+  }catch(e){tst('翻译失败: '+e.message,'err')}
+  finally{btn.disabled=false;btn.textContent=orig}
+}
+
+// ══════════════════════════════════════════════════════════════
+// LINKS MANAGEMENT (CTA buttons, social, friends)
+// ══════════════════════════════════════════════════════════════
+function rLinks(){
+  D.links=D.links||{primaryCTA:'',registerCTA:'',social:[],friends:[]};
+  D.links.social=D.links.social||[];
+  D.links.friends=D.links.friends||[];
+  return`
+<div class="pn-h"><h2><i>🔗</i> 链接中心</h2></div>
+<p class="pn-hp">💡 全站所有 CTA 按钮、社交图标、友情链接都在这里统一管理。留空则使用默认（主要 CTA 默认指向第一家推荐交易所）。</p>
+
+<div class="link-group">
+<h3 style="font-size:14px;font-weight:700;margin-bottom:12px;color:var(--grn)">🎯 主要 CTA 按钮</h3>
+<div class="r"><label>首页 Hero「立即注册」按钮链接</label><input id="lk_cta" value="${es(D.links.primaryCTA)}" placeholder="留空则默认跳到第一家推荐交易所"></div>
+<div class="r"><label>导航栏「注册」按钮链接</label><input id="lk_reg" value="${es(D.links.registerCTA)}" placeholder="留空则默认"></div>
+</div>
+
+<div class="link-group" style="margin-top:20px">
+<h3 style="font-size:14px;font-weight:700;margin-bottom:12px;color:var(--blu)">📱 社交媒体（页脚显示）</h3>
+<div id="socL">
+${D.links.social.map((s,i)=>`<div class="ci" data-soc="${i}">
+<input data-sf="icon" value="${es(s.icon)}" placeholder="图标" maxlength="3" style="max-width:60px">
+<input data-sf="name" value="${es(s.name)}" placeholder="名称" style="max-width:130px">
+<input data-sf="url" value="${es(s.url)}" placeholder="https://..." style="flex:2">
+<button class="rm" onclick="D.links.social.splice(${i},1);sv(D);render()">✕</button>
+</div>`).join('')}
+</div>
+<button class="b b-o" onclick="D.links.social.push({name:'',url:'',icon:''});sv(D);render()">+ 添加社交链接</button>
+</div>
+
+<div class="link-group" style="margin-top:20px">
+<h3 style="font-size:14px;font-weight:700;margin-bottom:12px;color:var(--yel)">🤝 友情链接（页脚显示）</h3>
+<p style="font-size:11.5px;color:var(--tx3);margin-bottom:10px">名称和描述支持 4 语言，填写简中其他留空会在网站上自动 fallback</p>
+<div id="frL">
+${D.links.friends.map((f,i)=>{const nz=f.name?.zh||f.name||'';return`<div style="padding:14px;background:var(--bg);border:1px solid var(--bd);border-radius:8px;margin-bottom:10px" data-fr="${i}">
+<div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap">
+<input data-ff="url" value="${es(f.url)}" placeholder="https://... (链接)" style="flex:1;min-width:220px">
+<button class="b b-r" style="padding:6px 12px;font-size:11px" onclick="D.links.friends.splice(${i},1);sv(D);render();tst('✓ 已删除')">🗑 删除</button>
+</div>
+<div class="row2">
+<input data-ff="name" data-l="zh" value="${es(f.name?.zh||f.name||'')}" placeholder="简中名称">
+<input data-ff="name" data-l="en" value="${es(f.name?.en||'')}" placeholder="English name">
+</div>
+<div class="row2" style="margin-top:6px">
+<input data-ff="name" data-l="zh-TW" value="${es(f.name?.['zh-TW']||'')}" placeholder="繁中名称">
+<input data-ff="name" data-l="ko" value="${es(f.name?.ko||'')}" placeholder="한국어 이름">
+</div>
+<div class="row2" style="margin-top:10px">
+<input data-ff="desc" data-l="zh" value="${es(f.desc?.zh||'')}" placeholder="简中描述（鼠标悬停显示）">
+<input data-ff="desc" data-l="en" value="${es(f.desc?.en||'')}" placeholder="English tooltip">
+</div>
+</div>`}).join('')}
+</div>
+<button class="b b-o" onclick="D.links.friends.push({name:{zh:'','zh-TW':'',en:'',ko:''},url:'',desc:{zh:'','zh-TW':'',en:'',ko:''}});sv(D);render()">+ 添加友情链接</button>
+</div>
+
+<div class="ba" style="position:sticky;bottom:16px;background:var(--bg);padding:12px;border-radius:9px;border:1px solid var(--bd);margin-top:18px;z-index:10">
+<button class="b b-g" onclick="saveLinks()">💾 保存全部链接</button>
+</div>`;
+}
+function saveLinks(){
+  D.links.primaryCTA=$('#lk_cta').value.trim();
+  D.links.registerCTA=$('#lk_reg').value.trim();
+  $$('#socL [data-soc]').forEach(el=>{
+    const i=+el.dataset.soc;if(!D.links.social[i])return;
+    $$('input',el).forEach(inp=>{D.links.social[i][inp.dataset.sf]=inp.value.trim()});
+  });
+  D.links.social=D.links.social.filter(s=>s.url||s.name);
+  $$('#frL [data-fr]').forEach(el=>{
+    const i=+el.dataset.fr;if(!D.links.friends[i])return;
+    const f=D.links.friends[i];f.name=f.name||{};f.desc=f.desc||{};
+    $$('input',el).forEach(inp=>{
+      const ff=inp.dataset.ff,l=inp.dataset.l;
+      if(ff==='url')f.url=inp.value.trim();
+      else if(l){f[ff]=f[ff]||{};f[ff][l]=inp.value.trim()}
+    });
+  });
+  D.links.friends=D.links.friends.filter(f=>f.url);
+  sv(D);tst('✓ 链接中心已保存')
+}
 
 // ══════════════════════════════════════════════════════════════
 // ARTICLES LIST
