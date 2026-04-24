@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Generate og-image.png · OuYi Hub</title>
+<style>
+body{background:#f5f5f5;font-family:system-ui,sans-serif;padding:30px;margin:0}
+h1{font-size:20px;margin-bottom:6px}
+p{color:#555;font-size:14px;margin-bottom:20px;line-height:1.6}
+.box{max-width:1240px;margin:0 auto;background:#fff;border-radius:12px;padding:24px;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+#preview{border:1px solid #ddd;display:block;max-width:100%;height:auto;margin-bottom:16px;border-radius:8px}
+.btns{display:flex;gap:10px;flex-wrap:wrap}
+button{background:#00d4a8;color:#fff;border:none;padding:12px 24px;border-radius:8px;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit}
+button:hover{background:#00b890}
+button.sec{background:#fff;color:#333;border:1px solid #ccc}
+.note{margin-top:14px;padding:12px 16px;background:#fffbea;border:1px solid #f0d97a;border-radius:8px;font-size:13px;color:#5a4800;line-height:1.6}
+.ok{background:#e8f7f0;border-color:#9ed4b5;color:#1e5e3a}
+</style>
+</head>
+<body>
+<div class="box">
+<h1>🖼️ og-image.png Generator</h1>
+<p>预览和下载用于社交媒体分享的分享图（1200×630）。点击 <b>Download PNG</b> 保存到本地，然后上传到网站根目录。</p>
+
+<canvas id="preview" width="1200" height="630" style="width:100%;max-width:1200px"></canvas>
+
+<div class="btns">
+<button onclick="downloadPNG()">⬇️ Download PNG (1200×630)</button>
+<button onclick="downloadSVG()" class="sec">⬇️ Download SVG Source</button>
+<button onclick="renderPreview()" class="sec">🔄 Refresh Preview</button>
+</div>
+
+<div class="note ok">
+✓ 生成后把 <code>og-image.png</code> 放到 GitHub 仓库根目录（和 <code>index.html</code> 同级）。部署后 <code>https://theouyi.com/og-image.png</code> 就会被社交媒体抓取。
+</div>
+
+<div class="note">
+💡 <b>一些替代方案：</b>
+<br>• 用 <a href="https://cloudconvert.com/svg-to-png" target="_blank">cloudconvert.com</a> 把 og-image.svg 直接转 PNG
+<br>• 用 Figma / Sketch 打开 SVG 导出 PNG
+<br>• SVG 本身也可以作为 og:image，现代浏览器都支持，但 Twitter 卡片兼容性不如 PNG
+</div>
+</div>
+
+<script>
+const SVG_URL='og-image.svg';
+
+async function renderPreview(){
+  const resp=await fetch(SVG_URL);
+  const svgText=await resp.text();
+  const blob=new Blob([svgText],{type:'image/svg+xml;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  const img=new Image();
+  img.onload=()=>{
+    const cv=document.getElementById('preview');
+    const ctx=cv.getContext('2d');
+    ctx.clearRect(0,0,1200,630);
+    ctx.drawImage(img,0,0,1200,630);
+    URL.revokeObjectURL(url);
+  };
+  img.onerror=()=>alert('加载 og-image.svg 失败。请确保此文件和 og-image.svg 在同一目录。');
+  img.src=url;
+}
+
+function downloadPNG(){
+  const cv=document.getElementById('preview');
+  cv.toBlob(blob=>{
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);
+    a.download='og-image.png';
+    a.click();
+    setTimeout(()=>URL.revokeObjectURL(a.href),2000);
+  },'image/png',0.95);
+}
+
+async function downloadSVG(){
+  const resp=await fetch(SVG_URL);
+  const svgText=await resp.text();
+  const blob=new Blob([svgText],{type:'image/svg+xml'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='og-image.svg';
+  a.click();
+}
+
+renderPreview();
+</script>
+</body>
+</html>

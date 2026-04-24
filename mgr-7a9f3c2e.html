@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Management · YouYi</title>
+<title>Management · OuYi Hub</title>
 <meta name="robots" content="noindex,nofollow,noarchive,nosnippet,noimageindex">
 <meta name="googlebot" content="noindex,nofollow">
 <meta name="bingbot" content="noindex,nofollow">
@@ -14,7 +14,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700;800&family=Outfit:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-:root{--bg:#070b13;--bg2:#0b1019;--bg3:#101724;--bg4:#192030;--tx:#e6eaf3;--tx2:#8893a7;--tx3:#55627a;--bd:#182236;--bd2:#243348;--grn:#00f5c4;--grn2:#00d4a6;--grnA:rgba(0,245,196,.11);--blu:#4a94ff;--bluA:rgba(74,148,255,.11);--red:#ff5060;--redA:rgba(255,80,96,.11);--yel:#fbbf24;--yelA:rgba(251,191,36,.11);--r:10px;--r2:14px}
+:root{--bg:#070b13;--bg2:#0b1019;--bg3:#101724;--bg4:#192030;--tx:#e6eaf3;--tx2:#8893a7;--tx3:#55627a;--bd:#182236;--bd2:#243348;--grn:#00f5c4;--grn2:#00d4a6;--grnA:rgba(0,245,196,.11);--blu:#4a94ff;--bluA:rgba(74,148,255,.11);--red:#ff5060;--redA:rgba(255,80,96,.11);--yel:#fbbf24;--yelA:rgba(251,191,36,.11);--org:#ff8a3a;--orgA:rgba(255,138,58,.11);--r:10px;--r2:14px}
 body{font-family:'Noto Sans SC','Outfit',sans-serif;background:var(--bg);color:var(--tx);line-height:1.7;min-height:100vh;padding:26px 22px 80px;font-size:15px;-webkit-font-smoothing:antialiased}
 body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(0,245,196,.04),transparent 60%);pointer-events:none;z-index:0}
 a{color:inherit;text-decoration:none}
@@ -119,6 +119,31 @@ input:checked+.tg-sl::before{transform:translateX(20px);background:var(--grn)}
 .prog.sh{display:block}
 
 @media(max-width:720px){.edg{grid-template-columns:1fr}.row2{grid-template-columns:1fr}.ah{flex-direction:column;align-items:flex-start}.pn{padding:20px}body{padding:18px 14px 60px}.qn{gap:6px}.qn a{padding:6px 12px;font-size:11.5px}}
+
+/* Clock bar */
+.clk-bar{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);padding:10px 16px;display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px}
+.clk-l{display:flex;align-items:center;flex-wrap:wrap;gap:4px}
+
+/* Stats dashboard */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px;margin-bottom:18px}
+.stat{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);padding:14px 16px;text-align:center}
+.stat .sv{font-family:'JetBrains Mono',monospace;font-size:24px;font-weight:800;line-height:1.1;margin-bottom:4px}
+.stat .sl{font-size:11px;color:var(--tx3);text-transform:uppercase;letter-spacing:1px;font-weight:600}
+
+/* Article search box */
+.asb{margin-bottom:12px;position:relative}
+.asb input{padding-left:38px;background:var(--bg)}
+.asb::before{content:'🔍';position:absolute;left:14px;top:50%;transform:translateY(-50%);opacity:.5;pointer-events:none}
+
+/* Help modal */
+.help-bd{position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:100;display:none;align-items:center;justify-content:center;padding:20px}
+.help-bd.sh{display:flex}
+.help-bx{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r2);padding:28px;max-width:520px;width:100%;max-height:86vh;overflow-y:auto}
+.help-bx h2{font-size:20px;margin-bottom:18px;display:flex;align-items:center;gap:9px}
+.help-bx table{width:100%;border-collapse:collapse;font-size:13.5px}
+.help-bx td{padding:9px 4px;border-bottom:1px solid var(--bd);line-height:1.6}
+.help-bx kbd{background:var(--bg3);border:1px solid var(--bd);border-radius:5px;padding:2px 8px;font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;color:var(--grn);display:inline-block;min-width:22px;text-align:center}
+.help-bx .kbs{display:flex;gap:4px;flex-wrap:wrap}
 </style>
 </head>
 <body>
@@ -143,6 +168,63 @@ function $(s){return document.querySelector(s)}
 function $$(s){return[...document.querySelectorAll(s)]}
 function es(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
 function tst(m,err){const t=document.getElementById('ts');t.textContent=m;t.className='ts sh'+(err?' err':'');setTimeout(()=>t.classList.remove('sh'),2500)}
+
+// ═══════════════════════════════════════════════
+// NETWORK TIME SYSTEM
+// ═══════════════════════════════════════════════
+let NET_OFFSET=0,NET_OK=false,NET_LAST=0,NET_SRC='';
+async function syncTime(silent){
+  const sources=[
+    {n:'OKX',u:'https://www.okx.com/api/v5/public/time',p:r=>parseInt(r.data?.[0]?.ts)},
+    {n:'WorldTimeAPI',u:'https://worldtimeapi.org/api/timezone/Etc/UTC',p:r=>new Date(r.utc_datetime).getTime()},
+    {n:'TimeAPI',u:'https://timeapi.io/api/Time/current/zone?timeZone=UTC',p:r=>new Date(r.dateTime+'Z').getTime()}
+  ];
+  for(const src of sources){
+    try{
+      const t0=Date.now();
+      const r=await fetch(src.u,{cache:'no-store'});
+      if(!r.ok)continue;
+      const d=await r.json();
+      const ms=src.p(d);
+      if(!ms||isNaN(ms))continue;
+      NET_OFFSET=ms+(Date.now()-t0)/2-Date.now();
+      NET_OK=true;NET_LAST=Date.now();NET_SRC=src.n;
+      updClock();
+      if(!silent)tst(`✓ 网络时间已同步 (${src.n})`);
+      return true;
+    }catch(e){}
+  }
+  NET_OK=false;updClock();
+  if(!silent)tst('⚠️ 网络时间同步失败，使用本地时间',1);
+  return false;
+}
+function netNow(){return new Date(Date.now()+NET_OFFSET)}
+function fmtT(d){return d.getUTCFullYear()+'-'+String(d.getUTCMonth()+1).padStart(2,'0')+'-'+String(d.getUTCDate()).padStart(2,'0')+' '+String(d.getUTCHours()).padStart(2,'0')+':'+String(d.getUTCMinutes()).padStart(2,'0')+':'+String(d.getUTCSeconds()).padStart(2,'0')+' UTC'}
+function updClock(){
+  const el=document.getElementById('clk');if(!el)return;
+  const n=netNow();
+  const badge=NET_OK?`<span style="color:var(--grn)">● ${NET_SRC}</span>`:`<span style="color:var(--yel)">● 本地时间</span>`;
+  const age=NET_LAST?Math.round((Date.now()-NET_LAST)/1000):0;
+  el.innerHTML=`<span>${fmtT(n)}</span> · ${badge}${NET_LAST?` · ${age<60?age+'秒':Math.round(age/60)+'分'}前同步`:''}`;
+}
+setInterval(updClock,1000);
+setInterval(()=>syncTime(1),30*60*1000);
+
+// ═══════════════════════════════════════════════
+// KEYBOARD SHORTCUTS
+// ═══════════════════════════════════════════════
+document.addEventListener('keydown',e=>{
+  if(!AL)return;
+  const mod=e.ctrlKey||e.metaKey;
+  // Don't trigger in input/textarea unless Cmd/Ctrl
+  const inEditor=/^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName);
+  if(mod&&e.key==='s'&&EA!==null){e.preventDefault();document.querySelector('[data-shortcut="save"]')?.click();return}
+  if(mod&&e.key==='b'){e.preventDefault();xpD();return}
+  if(inEditor)return;
+  if(e.key==='n'&&!mod){EA=-1;render();return}
+  if(e.key==='Escape'&&EA!==null){EA=null;render();return}
+  if(e.key==='/'&&!mod){e.preventDefault();document.getElementById('qs')?.focus();return}
+});
 
 // ══════════════════════════════════════════════════════════════
 // GOOGLE TRANSLATE API (free, unofficial)
@@ -206,7 +288,7 @@ async function translateLong(text,srcLang,tgtLang){
 // ══════════════════════════════════════════════════════════════
 function rLogin(){return`<div class="w"><div class="lb">
 <div class="lb-ic"><svg viewBox="0 0 32 32" width="56" height="56" fill="none"><circle cx="16" cy="16" r="14" fill="var(--grn)" opacity=".14"/><circle cx="16" cy="16" r="10" stroke="var(--grn)" stroke-width="2" fill="none"/><circle cx="16" cy="16" r="4" fill="var(--grn)"/><ellipse cx="16" cy="16" rx="14" ry="5" stroke="var(--grn)" stroke-width="1.5" fill="none" transform="rotate(-25 16 16)" opacity=".5"/></svg></div>
-<h1>有易 YouYi · 后台</h1>
+<h1>OuYi Hub · 后台</h1>
 <p>请输入管理密码继续</p>
 <input class="lb-in" id="lp" type="password" placeholder="管理密码" onkeydown="if(event.key==='Enter')doLog()">
 <button class="lb-bt" onclick="doLog()">登录</button>
@@ -223,17 +305,40 @@ function doLog(){
 // ══════════════════════════════════════════════════════════════
 // ADMIN PANELS
 // ══════════════════════════════════════════════════════════════
-function rAdmin(){return`<div class="w">
+function rAdmin(){
+  const stats={total:D.arts.length,pub:D.arts.filter(a=>a.pub).length,draft:D.arts.filter(a=>!a.pub).length,coins:D.coins.filter(c=>c.on).length,exs:D.exs.length};
+  return`<div class="w">
 <div class="ah">
 <div class="ah-l">
 <svg viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="14" fill="var(--grn)" opacity=".14"/><circle cx="16" cy="16" r="10" stroke="var(--grn)" stroke-width="2" fill="none"/><circle cx="16" cy="16" r="4" fill="var(--grn)"/></svg>
-<h1>有易 YouYi · 后台</h1>
-<span>v4 · 4语言支持</span>
+<h1>OuYi Hub · 后台</h1>
+<span>v5 · 实时同步</span>
 </div>
 <div class="ah-r">
-<button class="b b-o" onclick="window.open('/','_blank')">🌐 查看网站</button>
-<button class="b b-o" onclick="sessionStorage.removeItem('csp_auth');AL=false;render()">🚪 退出</button>
+<button class="b b-o" title="快捷键帮助" onclick="showHelp()">⌨</button>
+<button class="b b-o" onclick="window.open('/','_blank')">🌐 网站</button>
+<button class="b b-o" onclick="window.open('/en.html','_blank')">🇺🇸 EN</button>
+<button class="b b-r" onclick="sessionStorage.removeItem('csp_auth');AL=false;render()">🚪 退出</button>
 </div>
+</div>
+
+<!-- Live clock + network time badge -->
+<div class="clk-bar" id="clkbar">
+<div class="clk-l">
+<span style="font-size:11.5px;color:var(--tx3);text-transform:uppercase;letter-spacing:1.2px;font-weight:600">网络时间</span>
+<span id="clk" style="font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--tx);margin-left:10px">同步中...</span>
+</div>
+<button class="b b-o" style="padding:6px 12px;font-size:11.5px" onclick="syncTime()">🔄 立即同步</button>
+</div>
+
+<!-- Stats dashboard -->
+<div class="stats">
+<div class="stat"><div class="sv">${stats.total}</div><div class="sl">文章总数</div></div>
+<div class="stat"><div class="sv" style="color:var(--grn)">${stats.pub}</div><div class="sl">已发布</div></div>
+<div class="stat"><div class="sv" style="color:var(--yel)">${stats.draft}</div><div class="sl">草稿</div></div>
+<div class="stat"><div class="sv" style="color:var(--blu)">${stats.coins}</div><div class="sl">启用币种</div></div>
+<div class="stat"><div class="sv" style="color:var(--org)">${stats.exs}</div><div class="sl">交易所</div></div>
+<div class="stat"><div class="sv" style="font-size:17px;color:${D.autoTL?'var(--grn)':'var(--tx3)'}">${D.autoTL?'ON':'OFF'}</div><div class="sl">自动翻译</div></div>
 </div>
 
 <div class="qn">
@@ -242,6 +347,7 @@ function rAdmin(){return`<div class="w">
 <a onclick="document.getElementById('p-exs').scrollIntoView({behavior:'smooth'})">🏦 交易所</a>
 <a onclick="document.getElementById('p-arts').scrollIntoView({behavior:'smooth'})">📝 文章管理</a>
 <a onclick="document.getElementById('p-data').scrollIntoView({behavior:'smooth'})">💾 数据管理</a>
+<a onclick="EA=-1;render()" style="background:var(--grnA);color:var(--grn);border-color:rgba(0,245,196,.3);font-weight:600">+ 新建文章</a>
 </div>
 
 ${EA!==null?rArtEditor():`
@@ -303,18 +409,29 @@ ${D.exs.map((ex,i)=>`<div style="padding:14px;background:var(--bg);border:1px so
 // ARTICLES LIST
 // ══════════════════════════════════════════════════════════════
 function rArts(){return`
-<div class="pn-h"><h2><i>📝</i> 文章管理</h2><button class="b b-g" onclick="EA=-1;render()">+ 新建文章</button></div>
-${D.arts.length===0?'<p style="color:var(--tx3);text-align:center;padding:32px">暂无文章，点击右上角新建</p>':''}
+<div class="pn-h"><h2><i>📝</i> 文章管理 <span style="font-size:12px;color:var(--tx3);font-weight:400">按 <kbd style="background:var(--bg3);border:1px solid var(--bd);padding:1px 6px;border-radius:4px;font-size:10.5px">N</kbd> 新建 · <kbd style="background:var(--bg3);border:1px solid var(--bd);padding:1px 6px;border-radius:4px;font-size:10.5px">/</kbd> 搜索</span></h2><button class="b b-g" onclick="EA=-1;render()">+ 新建文章</button></div>
+<div class="asb"><input type="text" id="qs" placeholder="搜索文章标题、内容或标签..." oninput="filterArts(this.value)" autocomplete="off"></div>
+<div id="artL">
+${D.arts.length===0?'<p style="color:var(--tx3);text-align:center;padding:32px">暂无文章，点击右上角新建或按 N 键快速创建</p>':''}
 ${D.arts.map(a=>{const ls=['zh','zh-TW','en','ko'];const ldn={zh:'简',['zh-TW']:'繁',en:'EN',ko:'한'};
-return`<div class="al"><div><h4>${es(a.title?.zh||a.title?.en||a.title?.['zh-TW']||a.title?.ko||'(无标题)')}<span class="lb-indi">${ls.map(l=>`<span class="${a.title?.[l]?'on':''}">${ldn[l]}</span>`).join('')}</span></h4><div class="am">${a.date} · ${a.pub?'<span style="color:var(--grn)">已发布</span>':'草稿'}</div></div>
-<div style="display:flex;gap:5px"><button class="b b-o" style="padding:5px 12px;font-size:11px" onclick="EA=${a.id};render()">✎ 编辑</button><button class="b b-r" style="padding:5px 12px;font-size:11px" onclick="if(confirm('删除此文章？')){D.arts=D.arts.filter(x=>x.id!==${a.id});sv(D);render()}">🗑 删除</button></div>
-</div>`}).join('')}`}
+const searchText=[a.title?.zh,a.title?.en,a.cnt?.zh,a.tag?.zh].filter(Boolean).join(' ').toLowerCase();
+return`<div class="al" data-search="${es(searchText)}"><div style="flex:1;min-width:200px"><h4>${es(a.title?.zh||a.title?.en||a.title?.['zh-TW']||a.title?.ko||'(无标题)')}<span class="lb-indi">${ls.map(l=>`<span class="${a.title?.[l]?'on':''}" title="${l}${a.title?.[l]?'（已翻译）':'（未翻译）'}">${ldn[l]}</span>`).join('')}</span></h4><div class="am">${a.date} · ${a.pub?'<span style="color:var(--grn)">● 已发布</span>':'<span style="color:var(--yel)">○ 草稿</span>'}${a.tag?.zh?' · '+es(a.tag.zh):''}</div></div>
+<div style="display:flex;gap:5px;flex-wrap:wrap"><button class="b b-${a.pub?'y':'g'}" style="padding:5px 10px;font-size:11px" title="${a.pub?'取消发布':'立即发布'}" onclick="D.arts.find(x=>x.id===${a.id}).pub=${a.pub?0:1};sv(D);render();tst('${a.pub?'✓ 已转为草稿':'✓ 已发布'}')">${a.pub?'📋 草稿':'🚀 发布'}</button><button class="b b-o" style="padding:5px 10px;font-size:11px" onclick="EA=${a.id};render()">✎ 编辑</button><button class="b b-o" style="padding:5px 10px;font-size:11px" title="复制一份" onclick="const n=JSON.parse(JSON.stringify(D.arts.find(x=>x.id===${a.id})));n.id=Date.now();n.pub=0;n.date=new Date().toISOString().slice(0,10);['zh','zh-TW','en','ko'].forEach(l=>{if(n.title[l])n.title[l]='[副本] '+n.title[l]});D.arts.unshift(n);sv(D);render();tst('✓ 已复制')">⎘</button><button class="b b-r" style="padding:5px 10px;font-size:11px" onclick="if(confirm('删除此文章？此操作不可撤销。')){D.arts=D.arts.filter(x=>x.id!==${a.id});sv(D);render();tst('✓ 已删除')}">🗑</button></div>
+</div>`}).join('')}</div>`}
+
+// Filter articles by search query (no re-render for speed)
+function filterArts(q){
+  q=q.toLowerCase().trim();
+  document.querySelectorAll('#artL .al').forEach(el=>{
+    el.style.display=(!q||el.dataset.search.includes(q))?'':'none';
+  });
+}
 
 // ══════════════════════════════════════════════════════════════
 // ARTICLE EDITOR (with auto-translation)
 // ══════════════════════════════════════════════════════════════
 function rArtEditor(){
-const a=EA===-1?{id:Date.now(),date:new Date().toISOString().slice(0,10),pub:0,title:{zh:'','zh-TW':'',en:'',ko:''},exc:{zh:'','zh-TW':'',en:'',ko:''},cnt:{zh:'','zh-TW':'',en:'',ko:''},tag:{zh:'','zh-TW':'',en:'',ko:''}}:D.arts.find(x=>x.id===EA);
+const a=EA===-1?{id:Date.now(),date:netNow().toISOString().slice(0,10),pub:0,title:{zh:'','zh-TW':'',en:'',ko:''},exc:{zh:'','zh-TW':'',en:'',ko:''},cnt:{zh:'','zh-TW':'',en:'',ko:''},tag:{zh:'','zh-TW':'',en:'',ko:''}}:D.arts.find(x=>x.id===EA);
 if(!a){EA=null;return rAdmin()}
 // Ensure all lang fields exist
 ['title','exc','cnt','tag'].forEach(f=>{if(!a[f])a[f]={};['zh','zh-TW','en','ko'].forEach(l=>{if(!(l in a[f]))a[f][l]=''})});
@@ -371,7 +488,7 @@ ${['en','zh-TW','ko'].map(l=>{const info={en:{flag:'🇺🇸',nm:'English'},['zh
 </div>`}).join('')}
 
 <div class="ba" style="position:sticky;bottom:0;background:var(--bg2);padding:14px;border-top:1px solid var(--bd);margin:20px -24px -24px;border-radius:0 0 var(--r2) var(--r2);z-index:10">
-<button class="b b-g" onclick="svArt(${a.id})" style="font-size:13px;padding:10px 22px">💾 保存文章</button>
+<button class="b b-g" data-shortcut="save" onclick="svArt(${a.id})" style="font-size:13px;padding:10px 22px" title="Ctrl/⌘+S 保存">💾 保存文章</button>
 <button class="b b-o" onclick="EA=null;render()">取消</button>
 </div>
 </section>`}
@@ -490,14 +607,44 @@ function rData(){return`
 📌 更换浏览器前务必先导出<br>
 📌 导入会覆盖所有当前数据
 </div>`}
-function xpD(){const b=new Blob([JSON.stringify(D,null,2)],{type:'application/json'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download='youyi_'+new Date().toISOString().slice(0,10)+'.json';a.click();URL.revokeObjectURL(u);tst('✓ 已导出备份')}
+function xpD(){const b=new Blob([JSON.stringify(D,null,2)],{type:'application/json'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download='ouyihub_'+netNow().toISOString().slice(0,10)+'.json';a.click();URL.revokeObjectURL(u);tst('✓ 已导出备份')}
 function ipD(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{try{D={...JSON.parse(JSON.stringify(DF)),...JSON.parse(ev.target.result)};sv(D);render();tst('✓ 导入成功')}catch(err){tst('文件格式错误','err')}};r.readAsText(f);e.target.value=''}
 
 // ══════════════════════════════════════════════════════════════
 // INIT
 // ══════════════════════════════════════════════════════════════
-function render(){document.getElementById('app').innerHTML=AL?rAdmin():rLogin()}
+function render(){
+  document.getElementById('app').innerHTML=AL?rAdmin():rLogin();
+  if(AL)updClock();
+}
+
+// Help modal with keyboard shortcuts
+function showHelp(){
+  let bd=document.getElementById('helpBd');
+  if(!bd){bd=document.createElement('div');bd.id='helpBd';bd.className='help-bd';bd.onclick=e=>{if(e.target===bd)bd.classList.remove('sh')};document.body.appendChild(bd)}
+  bd.innerHTML=`<div class="help-bx">
+  <h2>⌨ 键盘快捷键</h2>
+  <table>
+    <tr><td style="width:38%"><div class="kbs"><kbd>N</kbd></div></td><td>新建文章（列表页）</td></tr>
+    <tr><td><div class="kbs"><kbd>/</kbd></div></td><td>聚焦搜索框</td></tr>
+    <tr><td><div class="kbs"><kbd>Ctrl</kbd>+<kbd>S</kbd></div></td><td>保存当前文章</td></tr>
+    <tr><td><div class="kbs"><kbd>Ctrl</kbd>+<kbd>B</kbd></div></td><td>导出数据备份</td></tr>
+    <tr><td><div class="kbs"><kbd>Esc</kbd></div></td><td>返回文章列表</td></tr>
+  </table>
+  <h2 style="margin-top:22px">💡 使用提示</h2>
+  <p style="font-size:13.5px;color:var(--tx2);line-height:1.8">
+  · 开启自动翻译后，中文内容保存时会自动填补其他语言<br>
+  · 每篇文章可单独控制"发布/草稿"状态<br>
+  · 网络时间每 30 分钟自动同步（OKX 服务器优先）<br>
+  · 建议每周导出一次 JSON 备份（Ctrl+B 快捷键）
+  </p>
+  <div style="margin-top:22px;text-align:right"><button class="b b-o" onclick="document.getElementById('helpBd').classList.remove('sh')">关闭</button></div>
+  </div>`;
+  bd.classList.add('sh');
+}
+
 render();
+syncTime(1);
 </script>
 </body>
 </html>

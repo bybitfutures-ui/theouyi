@@ -1,12 +1,16 @@
-# YouYi 有易 — robots.txt
+# OuYi Hub — 有易 — robots.txt
 # https://theouyi.com/
 
 User-agent: *
 Allow: /
+Allow: /en.html
+Allow: /og-image.png
+Allow: /og-image.svg
 Disallow: /mgr-
 Disallow: /admin
 Disallow: /login
 Disallow: /manage
+Disallow: /generate-og-image.html
 Disallow: /api/
 Disallow: /*?*
 Crawl-delay: 1
